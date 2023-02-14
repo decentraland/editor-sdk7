@@ -1,5 +1,7 @@
 import { watch, unwatch } from './watch'
 
+import { convertSlashToInvertSlashIfWin32 } from './../utils'
+
 /********************************************************
                           Mocks
 *********************************************************/
@@ -51,7 +53,7 @@ describe('watch', () => {
   describe('When watching', () => {
     it('should watch the node_modules directory of the workspace', () => {
       watch()
-      expect(watchSpy).toHaveBeenCalledWith('/path/to/workspace/node_modules')
+      expect(watchSpy).toHaveBeenCalledWith(convertSlashToInvertSlashIfWin32('/path/to/workspace/node_modules'))
     })
     it('refresh the tree when a change is detected ', () => {
       watch()
@@ -64,7 +66,7 @@ describe('watch', () => {
       watch()
       unwatch()
       expect(watcherMock.unwatch).toHaveBeenCalledWith(
-        '/path/to/workspace/node_modules'
+        convertSlashToInvertSlashIfWin32('/path/to/workspace/node_modules')
       )
     })
   })

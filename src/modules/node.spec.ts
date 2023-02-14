@@ -13,6 +13,8 @@ import {
 } from './node'
 import { getGlobalBinPath, setGlobalStoragePath } from './path'
 
+import { convertSlashToInvertSlashIfWin32 } from './../utils'
+
 /********************************************************
                           Mocks
 *********************************************************/
@@ -446,8 +448,8 @@ describe('node', () => {
         it('should link the node binaries', async () => {
           await checkNodeBinaries()
           expect(linkMock).toHaveBeenCalledWith(
-            '/globalStorage/node',
-            '/globalStorage/bin/node-v0.0.0-test-darwin-arm64/bin/node'
+            convertSlashToInvertSlashIfWin32('/globalStorage/node'),
+            convertSlashToInvertSlashIfWin32('/globalStorage/bin/node-v0.0.0-test-darwin-arm64/bin/node')
           )
         })
       })
@@ -525,7 +527,7 @@ describe('node', () => {
             it('should create the bin directory', async () => {
               await checkNodeBinaries()
               expect(fsMkdirSyncMock).toHaveBeenCalledWith(
-                '/globalStorage/bin',
+                convertSlashToInvertSlashIfWin32('/globalStorage/bin'),
                 {
                   recursive: true,
                 }
@@ -534,22 +536,22 @@ describe('node', () => {
             it('should uninstall the old distribution', async () => {
               await checkNodeBinaries()
               expect(rimrafMock).toHaveBeenCalledWith(
-                '/globalStorage/bin/node-v16.1.0-win-x64',
+                convertSlashToInvertSlashIfWin32('/globalStorage/bin/node-v16.1.0-win-x64'),
                 expect.any(Function)
               )
             })
             it('should unlink the old distribution', async () => {
               await checkNodeBinaries()
               expect(rimrafMock).toHaveBeenCalledWith(
-                '/globalStorage/node',
+                convertSlashToInvertSlashIfWin32('/globalStorage/node'),
                 expect.any(Function)
               )
             })
             it('should link the node binaries', async () => {
               await checkNodeBinaries()
               expect(linkMock).toHaveBeenCalledWith(
-                '/globalStorage/node',
-                '/globalStorage/bin/node-v16.2.0-darwin-arm64/bin/node'
+                convertSlashToInvertSlashIfWin32('/globalStorage/node'),
+                convertSlashToInvertSlashIfWin32('/globalStorage/bin/node-v16.2.0-darwin-arm64/bin/node')
               )
             })
           })

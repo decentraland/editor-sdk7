@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import { convertSlashToInvertSlashIfWin32 } from './../utils'
 
 import { getCwd, getScene, hasNodeModules, isDCL, isEmpty } from './workspace'
 
@@ -37,10 +38,10 @@ describe('workspace', () => {
       let realWorkspaceFolders = vscode.workspace
         .workspaceFolders as vscode.WorkspaceFolder[]
       beforeAll(() => {
-        ;(vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[]) = []
+        ; (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[]) = []
       })
       afterAll(() => {
-        ;(vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[]) =
+        ; (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[]) =
           realWorkspaceFolders
       })
       it('should throw', () => {
@@ -58,7 +59,7 @@ describe('workspace', () => {
     it('should read the scene json file from the file system', () => {
       getScene()
       expect(fsReadFileSyncMock).toHaveBeenCalledWith(
-        '/path/to/workspace/scene.json',
+        convertSlashToInvertSlashIfWin32('/path/to/workspace/scene.json'),
         'utf8'
       )
     })
