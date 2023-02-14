@@ -398,6 +398,7 @@
     "build": "node scripts/build.js",
     "build-debug": "node scripts/build.js --debug",
     "compile-inspector-proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=esModuleInterop=true,returnObservable=false,outputServices=generic-definitions,fileSuffix=.gen,oneof=unions --ts_proto_out=src/views/inspector/protocol -I=src/views/inspector/protocol src/views/inspector/protocol/message.proto"
+
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",
