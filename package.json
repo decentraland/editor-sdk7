@@ -396,7 +396,8 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "build": "node scripts/build.js",
-    "build-debug": "node scripts/build.js --debug"
+    "build-debug": "node scripts/build.js --debug",
+    "compile-inspector-proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=esModuleInterop=true,returnObservable=false,outputServices=generic-definitions,fileSuffix=.gen,oneof=unions --ts_proto_out=src/views/inspector/protocol -I=src/views/inspector/protocol src/views/inspector/protocol/message.proto"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",
@@ -424,6 +425,7 @@
     "@dcl/schemas": "^5.18.1",
     "@dcl/sdk": "^7.0.6-4124638014.commit-0cffdf7",
     "@dcl/wearable-preview": "^1.14.0",
+    "@protobuf-ts/protoc": "^2.8.2",
     "@types/analytics-node": "^3.1.9",
     "@types/cmd-shim": "^5.0.0",
     "@types/jest": "^29.2.3",
@@ -454,6 +456,7 @@
     "tree-kill": "^1.2.2",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
+    "ts-proto": "^1.139.0",
     "unzip-stream": "^0.3.1",
     "uuidv4": "^6.2.13"
   }
