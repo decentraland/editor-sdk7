@@ -1,4 +1,5 @@
 import { getPackageJson, getPackageVersion, hasDependency } from './pkg'
+import { convertSlashToInvertSlashIfWin32 } from './../utils'
 
 /********************************************************
                           Mocks
@@ -39,7 +40,7 @@ describe('pkg', () => {
     it('should read the package.json of the extension', () => {
       getPackageJson()
       expect(fsReadFileSyncMock).toHaveBeenCalledWith(
-        '/path/to/extension/package.json',
+        convertSlashToInvertSlashIfWin32('/path/to/extension/package.json'),
         'utf8'
       )
     })
@@ -51,7 +52,7 @@ describe('pkg', () => {
     it('should read the package.json from the workspace', () => {
       getPackageJson(null, true)
       expect(fsReadFileSyncMock).toHaveBeenCalledWith(
-        '/path/to/workspace/package.json',
+        convertSlashToInvertSlashIfWin32('/path/to/workspace/package.json'),
         'utf8'
       )
     })
@@ -65,7 +66,7 @@ describe('pkg', () => {
     it('should read the package.json from that module', () => {
       getPackageJson('some-module')
       expect(fsReadFileSyncMock).toHaveBeenCalledWith(
-        '/path/to/extension/node_modules/some-module/package.json',
+        convertSlashToInvertSlashIfWin32('/path/to/extension/node_modules/some-module/package.json'),
         'utf8'
       )
     })
@@ -89,7 +90,7 @@ describe('pkg', () => {
     it('should read the package.json from that module in the workspace', () => {
       getPackageJson('some-module', true)
       expect(fsReadFileSyncMock).toHaveBeenCalledWith(
-        '/path/to/workspace/node_modules/some-module/package.json',
+        convertSlashToInvertSlashIfWin32('/path/to/workspace/node_modules/some-module/package.json'),
         'utf8'
       )
     })
@@ -98,7 +99,7 @@ describe('pkg', () => {
     it('should read the package.json from that module', () => {
       getPackageVersion('some-module')
       expect(fsReadFileSyncMock).toHaveBeenCalledWith(
-        '/path/to/extension/node_modules/some-module/package.json',
+        convertSlashToInvertSlashIfWin32('/path/to/extension/node_modules/some-module/package.json'),
         'utf8'
       )
     })

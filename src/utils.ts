@@ -34,3 +34,24 @@ export function getServerParams(server: ServerName) {
       return ''
   }
 }
+
+const WIN = process.platform === 'win32'
+const WIN_DRIVE = WIN ? require('path').resolve('/').substring(0, 2) : ''
+
+/**
+ * Convert regular slash to invert slash, only if it's running in win32 platform
+ * @param str string to convert
+ * @returns Converted string
+ */
+export function convertSlashToInvertSlashIfWin32(str: string) {
+  return WIN ? str.replace(/\//g, '\\') : str
+}
+
+/**
+ * Add the default unit drive when it's running in win32 platform
+ * @param str string to convert
+ * @returns Converted string
+ */
+export function addDriveIfWin32(str: string) {
+  return WIN_DRIVE + str
+}

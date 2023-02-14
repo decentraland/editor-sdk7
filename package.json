@@ -395,8 +395,8 @@
     "deploy": "vsce publish",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "build": "./scripts/build.js",
-    "build-debug": "./scripts/build.js --debug"
+    "build": "node scripts/build.js",
+    "build-debug": "node scripts/build.js --debug"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",

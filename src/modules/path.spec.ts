@@ -8,6 +8,7 @@ import {
   setExtensionPath,
   setGlobalStoragePath,
 } from './path'
+import { convertSlashToInvertSlashIfWin32, addDriveIfWin32 } from './../utils'
 
 /********************************************************
                           Mocks
@@ -101,7 +102,7 @@ describe('path', () => {
       describe('and the command is part of the binaries', () => {
         it('should return the path to the bin file', () => {
           expect(getModuleBinPath('some-module', 'cmd')).toBe(
-            '/path/to/extension/node_modules/some-module/path/to/cmd.js'
+            convertSlashToInvertSlashIfWin32('/path/to/extension/node_modules/some-module/path/to/cmd.js')
           )
         })
       })
@@ -155,7 +156,7 @@ describe('path', () => {
       })
       it('should return the path to the Windows node bin', () => {
         expect(getNodeBinPath()).toBe(
-          '/globalStorage/bin/node-v1.0.0-win-x64/node.exe'
+          convertSlashToInvertSlashIfWin32('/globalStorage/bin/node-v1.0.0-win-x64/node.exe')
         )
       })
     })
@@ -178,7 +179,7 @@ describe('path', () => {
       })
       it('should return the path to the MacOS node bin', () => {
         expect(getNodeBinPath()).toBe(
-          '/globalStorage/bin/node-v1.0.0-darwin-arm64/bin/node'
+          convertSlashToInvertSlashIfWin32('/globalStorage/bin/node-v1.0.0-darwin-arm64/bin/node')
         )
       })
     })
@@ -234,8 +235,8 @@ describe('path', () => {
       })
       it('should return the two files', () => {
         expect(getFilePaths('/some/folder')).toEqual([
-          '/some/folder/file1.txt',
-          '/some/folder/file2.txt',
+          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/file1.txt')),
+          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/file2.txt')),
         ])
       })
     })
@@ -273,10 +274,10 @@ describe('path', () => {
       })
       it('should include the files in the subfolder', () => {
         expect(getFilePaths('/some/folder')).toEqual([
-          '/some/folder/file1.txt',
-          '/some/folder/file2.txt',
-          '/some/folder/subfolder/subfile1.txt',
-          '/some/folder/subfolder/subfile2.txt',
+          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/file1.txt')),
+          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/file2.txt')),
+          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/subfolder/subfile1.txt')),
+          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/subfolder/subfile2.txt')),
         ])
       })
     })

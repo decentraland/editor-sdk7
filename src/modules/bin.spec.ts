@@ -1,5 +1,6 @@
 import { bin, link } from './bin'
 import { setGlobalStoragePath, setExtensionPath } from './path'
+import { convertSlashToInvertSlashIfWin32 } from './../utils'
 
 /********************************************************
                           Mocks
@@ -77,7 +78,7 @@ describe('bin', () => {
       bin('decentraland', 'dcl', ['start'])
       expect(spawn).toBeCalledWith(
         expect.any(String),
-        '"/globalStorage/node"',
+        convertSlashToInvertSlashIfWin32('"/globalStorage/node"'),
         expect.any(Array),
         expect.any(Object)
       )
@@ -87,7 +88,7 @@ describe('bin', () => {
       expect(spawn).toBeCalledWith(
         expect.any(String),
         expect.any(String),
-        ['/extension/node_modules/decentraland/index.js', expect.any(String)],
+        [convertSlashToInvertSlashIfWin32('/extension/node_modules/decentraland/index.js'), expect.any(String)],
         expect.any(Object)
       )
     }),
@@ -159,7 +160,7 @@ describe('bin', () => {
         bin('decentraland', 'dcl')
         expect(spawn).toBeCalledWith(
           expect.any(String),
-          '"/globalStorage with white spaces/node"',
+          convertSlashToInvertSlashIfWin32('"/globalStorage with white spaces/node"'),
           [expect.any(String)],
           expect.any(Object)
         )
@@ -180,7 +181,7 @@ describe('bin', () => {
         bin('decentraland', 'dcl')
         expect(spawn).toBeCalledWith(
           expect.any(String),
-          '"/globalStorage/node.cmd"',
+          convertSlashToInvertSlashIfWin32('"/globalStorage/node.cmd"'),
           [expect.any(String)],
           expect.any(Object)
         )
