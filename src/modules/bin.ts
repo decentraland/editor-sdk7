@@ -21,7 +21,7 @@ export function bin(
   const node = fixWhiteSpaces(getNodeCmdPath())
   const bin = getModuleBinPath(moduleName, command)
   return spawn(
-    args[0] ? `${command} ${args[0]}` : command,
+    args.length > 0 ? `${command} ${args.join(' ').trim()}` : command,
     node,
     [bin, ...(args.filter((arg: string | undefined) => !!arg) as string[])],
     options
