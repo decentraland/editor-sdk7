@@ -4,7 +4,7 @@ import { npmInstall } from '../modules/npm'
 import { bin } from '../modules/bin'
 
 export async function init() {
-  const child = bin('@dcl/sdk', 'sdk-commands', ['init'])
+  const child = bin('@dcl/sdk', 'sdk-commands', ['init', '--skip-install'])
 
   await loader(
     `Creating project...`,
