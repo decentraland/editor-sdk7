@@ -397,8 +397,7 @@
     "test:coverage": "jest --coverage",
     "build": "node scripts/build.js",
     "build-debug": "node scripts/build.js --debug",
-    "compile-inspector-proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=esModuleInterop=true,returnObservable=false,outputServices=generic-definitions,fileSuffix=.gen,oneof=unions --ts_proto_out=src/views/inspector/protocol -I=src/views/inspector/protocol src/views/inspector/protocol/message.proto"
-
+    "protoc": "protoc"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",
@@ -423,6 +422,7 @@
   },
   "dependencies": {
     "@dcl/inspector": "^0.1.0-4057700455.commit-453395e",
+    "@dcl/rpc": "^1.1.1",
     "@dcl/schemas": "^5.18.1",
     "@dcl/sdk": "^7.0.6-4124638014.commit-0cffdf7",
     "@dcl/wearable-preview": "^1.14.0",
@@ -432,6 +432,7 @@
     "@types/jest": "^29.2.3",
     "@types/semver": "^7.3.13",
     "@types/unzip-stream": "^0.3.1",
+    "@types/ws": "^8.5.4",
     "analytics-node": "^6.2.0",
     "chokidar": "^3.5.3",
     "cmd-shim": "^6.0.0",
@@ -459,6 +460,10 @@
     "ts-node": "^10.9.1",
     "ts-proto": "^1.139.0",
     "unzip-stream": "^0.3.1",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "ws": "^8.12.1"
+  },
+  "config": {
+    "protocVersion": "3.20.1"
   }
 }

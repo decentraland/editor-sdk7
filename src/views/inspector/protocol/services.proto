@@ -1,0 +1,54 @@
+syntax = "proto3";
+package decentraland.editor.sdk7;
+
+message ComponentDefinition {
+  /**
+   * Component name, the ID is calculated from this param
+   */
+  string name = 1;
+
+  /**
+   * Schema description serialized as JSON
+   */
+  string schema_description = 2;
+}
+
+message Asset {
+  /**
+   * Asset name
+   */
+  string name = 1;
+
+  /**
+   * The asset path if it's reachable
+   */
+  string asset_path = 2;
+
+  /**
+   * The asset binary data if the path it's not reachable
+   */
+  bytes image_data = 3;
+}
+
+message InitResponse {
+  /**
+   * ECS binary state serialized by the CRDT protocol
+   */
+  bytes state = 1;
+
+  /**
+   * Custom components
+   */
+  repeated ComponentDefinition components = 2;
+
+  /**
+   * Assets available
+   */
+  repeated Asset assets = 3;
+}
+
+message InitRequest {}
+
+service DataService {
+  rpc Init(InitRequest) returns (InitResponse) {}
+}

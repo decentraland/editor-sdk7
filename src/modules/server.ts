@@ -6,9 +6,10 @@ import { clearPort, getPort } from './port'
 import { sleep } from './sleep'
 import { log } from './log'
 import { getMessage } from './error'
+import ws from 'ws'
 
 export abstract class Server {
-  constructor(public name: string) {}
+  constructor(public name: string) { }
 
   isStarting = false
   isStopping = false

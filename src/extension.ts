@@ -3,7 +3,7 @@ import env from 'dotenv'
 import path from 'path'
 import { GLTFPreviewEditorProvider } from './views/gltf-preview/provider'
 import { gltfPreviewServer } from './views/gltf-preview/server'
-import { inspectorServer } from './views/inspector/server'
+import { inspectorRpcServer, inspectorServer } from './views/inspector/server'
 import { runSceneServer } from './views/run-scene/server'
 import { setExtensionPath, setGlobalStoragePath } from './modules/path'
 import { install } from './commands/install'
@@ -41,8 +41,8 @@ export async function activate(context: vscode.ExtensionContext) {
       context.extensionMode === vscode.ExtensionMode.Development
         ? 'development'
         : context.extensionMode === vscode.ExtensionMode.Production
-        ? 'production'
-        : 'test'
+          ? 'production'
+          : 'test'
     log(`Extension mode: ${mode}`)
 
     // Load .env
@@ -258,10 +258,11 @@ async function boot() {
   try {
     await (isValid
       ? Promise.all([
-          gltfPreviewServer.start(),
-          runSceneServer.start(),
-          inspectorServer.start(),
-        ])
+        gltfPreviewServer.start(),
+        runSceneServer.start(),
+        inspectorServer.start(),
+        inspectorRpcServer.start(),
+      ])
       : gltfPreviewServer.start())
   } catch (error: any) {
     log(`Something went wrong initializing servers:`, error.message)

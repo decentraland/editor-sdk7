@@ -19,7 +19,7 @@ export interface Asset {
   imageData: Uint8Array;
 }
 
-export interface ExtensionMessageInit {
+export interface InitResponse {
   /** ECS binary state serialized by the CRDT protocol */
   state: Uint8Array;
   /** Custom components */
@@ -28,8 +28,7 @@ export interface ExtensionMessageInit {
   assets: Asset[];
 }
 
-export interface ExtensionMessage {
-  msg?: { $case: "initMessage"; initMessage: ExtensionMessageInit };
+export interface InitRequest {
 }
 
 function createBaseComponentDefinition(): ComponentDefinition {
@@ -166,12 +165,12 @@ export const Asset = {
   },
 };
 
-function createBaseExtensionMessageInit(): ExtensionMessageInit {
+function createBaseInitResponse(): InitResponse {
   return { state: new Uint8Array(), components: [], assets: [] };
 }
 
-export const ExtensionMessageInit = {
-  encode(message: ExtensionMessageInit, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const InitResponse = {
+  encode(message: InitResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.state.length !== 0) {
       writer.uint32(10).bytes(message.state);
     }
@@ -184,10 +183,10 @@ export const ExtensionMessageInit = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ExtensionMessageInit {
+  decode(input: _m0.Reader | Uint8Array, length?: number): InitResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseExtensionMessageInit();
+    const message = createBaseInitResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -208,7 +207,7 @@ export const ExtensionMessageInit = {
     return message;
   },
 
-  fromJSON(object: any): ExtensionMessageInit {
+  fromJSON(object: any): InitResponse {
     return {
       state: isSet(object.state) ? bytesFromBase64(object.state) : new Uint8Array(),
       components: Array.isArray(object?.components)
@@ -218,7 +217,7 @@ export const ExtensionMessageInit = {
     };
   },
 
-  toJSON(message: ExtensionMessageInit): unknown {
+  toJSON(message: InitResponse): unknown {
     const obj: any = {};
     message.state !== undefined &&
       (obj.state = base64FromBytes(message.state !== undefined ? message.state : new Uint8Array()));
@@ -235,12 +234,12 @@ export const ExtensionMessageInit = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ExtensionMessageInit>, I>>(base?: I): ExtensionMessageInit {
-    return ExtensionMessageInit.fromPartial(base ?? {});
+  create<I extends Exact<DeepPartial<InitResponse>, I>>(base?: I): InitResponse {
+    return InitResponse.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ExtensionMessageInit>, I>>(object: I): ExtensionMessageInit {
-    const message = createBaseExtensionMessageInit();
+  fromPartial<I extends Exact<DeepPartial<InitResponse>, I>>(object: I): InitResponse {
+    const message = createBaseInitResponse();
     message.state = object.state ?? new Uint8Array();
     message.components = object.components?.map((e) => ComponentDefinition.fromPartial(e)) || [];
     message.assets = object.assets?.map((e) => Asset.fromPartial(e)) || [];
@@ -248,30 +247,22 @@ export const ExtensionMessageInit = {
   },
 };
 
-function createBaseExtensionMessage(): ExtensionMessage {
-  return { msg: undefined };
+function createBaseInitRequest(): InitRequest {
+  return {};
 }
 
-export const ExtensionMessage = {
-  encode(message: ExtensionMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    switch (message.msg?.$case) {
-      case "initMessage":
-        ExtensionMessageInit.encode(message.msg.initMessage, writer.uint32(10).fork()).ldelim();
-        break;
-    }
+export const InitRequest = {
+  encode(_: InitRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ExtensionMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): InitRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseExtensionMessage();
+    const message = createBaseInitRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.msg = { $case: "initMessage", initMessage: ExtensionMessageInit.decode(reader, reader.uint32()) };
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -280,35 +271,40 @@ export const ExtensionMessage = {
     return message;
   },
 
-  fromJSON(object: any): ExtensionMessage {
-    return {
-      msg: isSet(object.initMessage)
-        ? { $case: "initMessage", initMessage: ExtensionMessageInit.fromJSON(object.initMessage) }
-        : undefined,
-    };
+  fromJSON(_: any): InitRequest {
+    return {};
   },
 
-  toJSON(message: ExtensionMessage): unknown {
+  toJSON(_: InitRequest): unknown {
     const obj: any = {};
-    message.msg?.$case === "initMessage" &&
-      (obj.initMessage = message.msg?.initMessage ? ExtensionMessageInit.toJSON(message.msg?.initMessage) : undefined);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ExtensionMessage>, I>>(base?: I): ExtensionMessage {
-    return ExtensionMessage.fromPartial(base ?? {});
+  create<I extends Exact<DeepPartial<InitRequest>, I>>(base?: I): InitRequest {
+    return InitRequest.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<ExtensionMessage>, I>>(object: I): ExtensionMessage {
-    const message = createBaseExtensionMessage();
-    if (
-      object.msg?.$case === "initMessage" && object.msg?.initMessage !== undefined && object.msg?.initMessage !== null
-    ) {
-      message.msg = { $case: "initMessage", initMessage: ExtensionMessageInit.fromPartial(object.msg.initMessage) };
-    }
+  fromPartial<I extends Exact<DeepPartial<InitRequest>, I>>(_: I): InitRequest {
+    const message = createBaseInitRequest();
     return message;
   },
 };
+
+export type DataServiceDefinition = typeof DataServiceDefinition;
+export const DataServiceDefinition = {
+  name: "DataService",
+  fullName: "decentraland.editor.sdk7.DataService",
+  methods: {
+    init: {
+      name: "Init",
+      requestType: InitRequest,
+      requestStream: false,
+      responseType: InitResponse,
+      responseStream: false,
+      options: {},
+    },
+  },
+} as const;
 
 declare var self: any | undefined;
 declare var window: any | undefined;
