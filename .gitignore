@@ -4,3 +4,4 @@ decentraland-*.vsix
 .env
 coverage
 dist
+*.gen.ts
