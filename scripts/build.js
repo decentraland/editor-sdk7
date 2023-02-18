@@ -1,38 +1,5 @@
 #!/usr/bin/env node
-const { spawnSync } = require('child_process')
 const { build } = require('estrella')
-
-function compileProtocolBuffer() {
-  console.log('Generating .proto services...')
-  // Protocol Buffer TS generation files
-  const protocNpmArgs = [
-    'run',
-    'protoc',
-    '--',
-    '--plugin=./node_modules/.bin/protoc-gen-ts_proto',
-    '--ts_proto_opt=esModuleInterop=true,returnObservable=false,outputServices=generic-definitions,fileSuffix=.gen,oneof=unions',
-    '--ts_proto_out=src/views/inspector/protocol',
-    '-I=src/views/inspector/protocol',
-    'src/views/inspector/protocol/services.proto'
-  ]
-
-  const isWindows = (process.platform === "win32" || opsys === "win64")
-
-  let result
-  if (isWindows) {
-    result = spawnSync('npm.cmd', protocNpmArgs.map(item => item.replace(/\//g, '\\')), {
-      encoding: 'utf-8'
-    })
-  } else {
-    resulst = spawnSync('npm', protocNpmArgs)
-  }
-
-  if (result.stderr.length > 0) {
-    throw new Error('Error while generating protocol buffers. ' + result.stderr)
-  }
-
-  console.log('Generating .proto services... OK')
-}
 
 // I took this from here: https://github.com/evanw/esbuild/issues/1051#issuecomment-806325487
 const nativeNodeModulesPlugin = {
@@ -72,8 +39,6 @@ const nativeNodeModulesPlugin = {
 }
 
 const isDebug = process.argv.some((arg) => arg === '--debug')
-
-compileProtocolBuffer()
 
 build({
   platform: 'node',

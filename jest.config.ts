@@ -11,6 +11,7 @@ const config: Config.InitialOptions = {
       functions: 100,
     },
   },
+  transformIgnorePatterns: ["node_modules/(?!@dcl/protocol)"]
 }
 
 export default config

@@ -7,6 +7,7 @@ import { getExtensionPath } from '../../modules/path'
 import { Server, StaticServer } from '../../modules/server'
 import { ServerName } from '../../types'
 import { registerDataService } from './data-service'
+import { DataServiceContext } from './data-service/types'
 
 export const inspectorServer = new StaticServer(ServerName.Inspector, () =>
   path.join(
@@ -15,10 +16,9 @@ export const inspectorServer = new StaticServer(ServerName.Inspector, () =>
   )
 )
 
-export type InspectorContext = {}
 
 class InspectorRpcServer extends Server {
-  rpcServer: RpcServer<InspectorContext>
+  rpcServer: RpcServer<DataServiceContext>
   webSocketServer: WebSocketServer | null = null
 
   constructor() {
@@ -27,7 +27,7 @@ class InspectorRpcServer extends Server {
     this.rpcServer.setHandler(this.rpcHandler)
   }
 
-  private async rpcHandler(serverPort: RpcServerPort<InspectorContext>, transport: Transport, context: {}) {
+  private async rpcHandler(serverPort: RpcServerPort<DataServiceContext>, transport: Transport, context: {}) {
     registerDataService(serverPort)
   }
 
@@ -47,7 +47,14 @@ class InspectorRpcServer extends Server {
 
     this.webSocketServer!.on('connection', (socket, request) => {
       const wsTransport = WebSocketTransport(socket as any)
-      this.rpcServer.attachTransport(wsTransport, {})
+      this.rpcServer.attachTransport(wsTransport, {
+        currentComposite: {
+          components: [],
+          readonly: false
+        },
+        undoList: [],
+        redoList: []
+      })
     })
   }
 

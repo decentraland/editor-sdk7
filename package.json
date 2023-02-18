@@ -422,7 +422,7 @@
   },
   "dependencies": {
     "@dcl/inspector": "^0.1.0-4057700455.commit-453395e",
-    "@dcl/protocol": "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-4203382835.commit-f0a525f.tgz",
+    "@dcl/protocol": "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-4211041143.commit-88e6751.tgz",
     "@dcl/rpc": "^1.1.1",
     "@dcl/schemas": "^5.18.1",
     "@dcl/sdk": "^7.0.6-4124638014.commit-0cffdf7",
