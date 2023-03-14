@@ -1,5 +1,6 @@
 import path from 'path'
 import vscode from 'vscode'
+import { log } from '../../modules/log'
 import { getExtensionPath } from '../../modules/path'
 import { Webview } from '../../modules/webview'
 import { ServerName } from '../../types'
@@ -19,7 +20,15 @@ export async function createWebivew() {
 
   const url = await getServerUrl(ServerName.RunScene)
 
-  const webview = new Webview(url, panel)
+  // TODO: make more flexible the postMessage communication or define the types on @dcl/schemas
+  // I skipped the type definition by hardly checking the message in `onMessage` function
+  const webview = new Webview<never, never, any, any>(url, panel)
+
+  webview.onMessage((message) => {
+    if (typeof message.type === "string" && message.type.startsWith("logger.") && message.payload && Array.isArray(message.payload.args)) {
+      log(message.type, ...message.payload.args)
+    }
+  })
 
   return webview
 }
