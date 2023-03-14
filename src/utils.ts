@@ -27,7 +27,7 @@ export async function getServerUrl(server: ServerName) {
 export function getServerParams(server: ServerName) {
   switch (server) {
     case ServerName.RunScene:
-      return `?position=${encodeURI(getScene().scene.base)}`
+      return `?position=${encodeURI(getScene().scene.base)}&PIPE_CONSOLE_TO_PARENT`
     case ServerName.PublishScene:
       return getLocalValue<boolean>('isWorld') ? `?skipValidations=true` : ''
     default:
