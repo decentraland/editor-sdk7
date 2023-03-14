@@ -29,6 +29,7 @@ import {
 } from './modules/analytics'
 import { activateRollbar, deactivateRollbar, report } from './modules/rollbar'
 import { getPackageJson, getPackageVersion } from './modules/pkg'
+import { notifyUpdate } from './modules/notification'
 import { getCwd, isDCL, isEmpty } from './modules/workspace'
 import { getServerUrl } from './utils'
 import { ServerName } from './types'
@@ -199,6 +200,14 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Check node binaries, download them if necessary
     await checkNodeBinaries()
+
+    // Check and notify updated version for @dcl/sdk
+    await notifyUpdate(
+      'Decentraland SDK',
+      '@dcl/sdk',
+      'sdkVersion',
+      'decentraland/js-sdk-toolchain'
+    )
 
     // Start servers and watchers
     await boot()

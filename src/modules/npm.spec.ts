@@ -42,10 +42,9 @@ import {
 jest.mock('./analytics')
 const trackMock = track as jest.MockedFunction<typeof track>
 
-const showWarningMessagesMock =
-  window.showWarningMessage as jest.MockedFunction<
-    typeof window.showWarningMessage
-  >
+const showWarningMessageMock = window.showWarningMessage as jest.MockedFunction<
+  typeof window.showWarningMessage
+>
 
 const showErrorMessageMock = window.showErrorMessage as jest.MockedFunction<
   typeof window.showErrorMessage
@@ -225,7 +224,7 @@ describe('npm', () => {
       })
       it('should not promp the user', async () => {
         await warnOutdatedDependency('the-dependency')
-        expect(showWarningMessagesMock).not.toHaveBeenCalled()
+        expect(showWarningMessageMock).not.toHaveBeenCalled()
       })
     })
     describe('and the messagge has not been ignored', () => {
@@ -237,13 +236,13 @@ describe('npm', () => {
       })
       describe('and the user selects to update the dependency', () => {
         beforeEach(() => {
-          showWarningMessagesMock.mockResolvedValueOnce(
+          showWarningMessageMock.mockResolvedValueOnce(
             'Update' as unknown as MessageItem
           )
           loaderMock.mockResolvedValueOnce(void 0)
         })
         afterEach(() => {
-          showWarningMessagesMock.mockReset()
+          showWarningMessageMock.mockReset()
           loaderMock.mockReset()
         })
         it('should track the show event', async () => {
@@ -254,7 +253,7 @@ describe('npm', () => {
         })
         it('should promp the user', async () => {
           await warnOutdatedDependency('the-dependency')
-          expect(showWarningMessagesMock).toHaveBeenCalledWith(
+          expect(showWarningMessageMock).toHaveBeenCalledWith(
             'The dependency "the-dependency" is outdated',
             'Update',
             'Ignore'
@@ -276,13 +275,13 @@ describe('npm', () => {
       })
       describe('and the user ignores the warning', () => {
         beforeEach(() => {
-          showWarningMessagesMock.mockResolvedValueOnce(
+          showWarningMessageMock.mockResolvedValueOnce(
             'Ignore' as unknown as MessageItem
           )
           setLocalValueMock.mockReturnValueOnce(void 0)
         })
         afterEach(() => {
-          showWarningMessagesMock.mockReset()
+          showWarningMessageMock.mockReset()
           setLocalValueMock.mockReset()
         })
         it('should store the ignore flag in the local storage', async () => {
