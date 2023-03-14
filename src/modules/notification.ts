@@ -12,10 +12,10 @@ export async function notifyUpdate(
   // Grab version from last activation
   const prevVersion = getGlobalValue<string>(storage)
 
-  // Grab current versions
+  // Grab current version
   const currentVersion = getPackageJson(moduleName).version
 
-  // Update stored versions for next activation
+  // Update stored version for next activation
   setGlobalValue(storage, currentVersion)
 
   if (!prevVersion) {
@@ -23,7 +23,7 @@ export async function notifyUpdate(
     return
   }
 
-  // Check if the has been an upgrade in the version and notify
+  // Check if the version has been an updated and notify if so
   if (semver.gt(currentVersion, prevVersion)) {
     const didClick = await vscode.window.showInformationMessage(
       `${title} has been updated to v${currentVersion}!`,
