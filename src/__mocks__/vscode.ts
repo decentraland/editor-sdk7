@@ -15,6 +15,7 @@ export const window = {
         }) => Promise<any>
       ) => onProgress({ report: jest.fn() })
     ),
+  showInformationMessage: jest.fn(),
   showWarningMessage: jest.fn(),
   showErrorMessage: jest.fn(),
   showQuickPick: jest.fn(),
@@ -36,6 +37,7 @@ export const workspace = {
 
 export const env = {
   asExternalUri: jest.fn().mockImplementation((value) => value),
+  openExternal: jest.fn(),
 }
 
 export const Uri = {
