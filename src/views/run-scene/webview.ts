@@ -25,8 +25,24 @@ export async function createWebivew() {
   const webview = new Webview<never, never, any, any>(url, panel)
 
   webview.onMessage((message) => {
-    if (typeof message.type === "string" && message.type.startsWith("logger.") && message.payload && Array.isArray(message.payload.args)) {
-      log(message.type, ...message.payload.args)
+    if (
+      typeof message.type === 'string' &&
+      message.type.startsWith('logger.') &&
+      message.payload &&
+      Array.isArray(message.payload.args)
+    ) {
+      let text = message.payload.args[3]
+      // messages of type logger.error for some reason come stringified, thus wrapped in extra double quotes
+      if (message.type === 'logger.error') {
+        try {
+          text = JSON.parse(text)
+        } catch (e) {
+          // false alarm, proceed
+        }
+      }
+      if (text) {
+        log(`scene::${message.type.split('logger.').pop()} >`, text)
+      }
     }
   })
 
