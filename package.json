@@ -420,7 +420,7 @@
     "semi": false
   },
   "dependencies": {
-    "@dcl/inspector": "^0.1.0-4057700455.commit-453395e",
+    "@dcl/inspector": "^7.1.4-4534422922.commit-5d83e9a",
     "@dcl/schemas": "^5.18.1",
     "@dcl/sdk": "^7.1.3",
     "@dcl/wearable-preview": "^1.14.0",

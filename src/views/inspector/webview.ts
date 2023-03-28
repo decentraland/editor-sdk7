@@ -1,7 +1,8 @@
+import fetch from 'node-fetch'
 import path from 'path'
 import vscode from 'vscode'
 import { getExtensionPath } from '../../modules/path'
-import { Webview } from '../../modules/webview'
+import { waitForServer } from '../../modules/server'
 import { ServerName } from '../../types'
 import { getServerUrl } from '../../utils'
 
@@ -18,8 +19,9 @@ export async function createWebview() {
   )
 
   const url = await getServerUrl(ServerName.Inspector)
-
-  const webview = new Webview(url, panel)
-
-  return webview
+  await waitForServer(url)
+  const html = await fetch(url).then((res) => res.text())
+  panel.webview.html = html
+    .replace('bundle.js', `${url}/bundle.js`)
+    .replace('bundle.css', `${url}/bundle.css`)
 }
