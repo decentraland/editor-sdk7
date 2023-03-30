@@ -11,7 +11,7 @@ class PublishSceneServer extends Server {
   }
 
   async onStart(...args: string[]) {
-    this.child = bin('decentraland', 'dcl', [
+    this.child = bin('@dcl/sdk-commands', 'sdk-commands', [
       'deploy',
       `--port ${await this.getPort()}`,
       `--no-browser`,

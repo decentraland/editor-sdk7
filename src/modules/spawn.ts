@@ -47,7 +47,7 @@ export function spawn(
   args: string[] = [],
   options: SpawnOptions = {}
 ): SpanwedChild {
-  const { cwd = getCwd(), env = { ...process.env } } = options
+  const { cwd = getCwd(), env = { ...process.env, EDITOR: 'true' } } = options
 
   // status
   let isKilling = false
