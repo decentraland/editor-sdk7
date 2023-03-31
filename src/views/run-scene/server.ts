@@ -34,6 +34,7 @@ class RunSceneServer extends Server {
       `--port ${await this.getPort()}`,
       '--no-browser',
       '--skip-install',
+      '--data-layer'
     ])
 
     this.child.process.on('close', async (code) => {

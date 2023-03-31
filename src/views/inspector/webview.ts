@@ -18,10 +18,22 @@ export async function createWebview() {
     path.join(getExtensionPath(), 'resources', 'logo.ico')
   )
 
-  const url = await getServerUrl(ServerName.Inspector)
-  await waitForServer(url)
+  const dataLayerRpcUrl = (await getServerUrl(ServerName.RunScene, false)).replace('http://', "ws://") + 'data-layer'
+  const url = new URL(await getServerUrl(ServerName.Inspector))
+  url.searchParams.set('ws', dataLayerRpcUrl)
+
+  await waitForServer(url.toString())
   const html = await fetch(url).then((res) => res.text())
+  
   panel.webview.html = html
     .replace('bundle.js', `${url}/bundle.js`)
     .replace('bundle.css', `${url}/bundle.css`)
+    .replace('</html>', `
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('ws', '${dataLayerRpcUrl}');
+  window.location.search = urlParams;
+</script>
+
+</html>`)
 }
