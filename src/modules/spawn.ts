@@ -47,7 +47,7 @@ export function spawn(
   args: string[] = [],
   options: SpawnOptions = {}
 ): SpanwedChild {
-  const { cwd = getCwd(), env = { ...process.env, EDITOR: 'true' } } = options
+  const { cwd = getCwd(), env = { ...process.env } } = options
 
   // status
   let isKilling = false
@@ -62,6 +62,7 @@ export function spawn(
   const newEnv = {
     ...env,
     PATH: joinEnvPaths(env.PATH, nodePath, npmPath),
+    EDITOR_SDK7: 'true'
   }
 
   const child = crossSpawn(command, args, {

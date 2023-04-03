@@ -1,9 +1,5 @@
 import { ProgressLocation } from 'vscode'
-import {
-  npmInstall,
-  warnDecentralandLibrary,
-  warnOutdatedDependency,
-} from '../../modules/npm'
+import { npmInstall } from '../../modules/npm'
 import { bin } from '../../modules/bin'
 import { SpanwedChild } from '../../modules/spawn'
 import { log } from '../../modules/log'

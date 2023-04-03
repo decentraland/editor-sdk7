@@ -160,7 +160,7 @@ describe('When spawning a child process', () => {
       expect.objectContaining({
         env: {
           PATH: '/usr/bin;/globalStorage/bin;/path/to/project/node_modules/npm/bin',
-          EDITOR: "true"
+          EDITOR_SDK7: "true"
         },
       })
     )
@@ -216,6 +216,7 @@ describe('When spawning a child process', () => {
         expect.objectContaining({
           env: {
             PATH: '/custom/path;/globalStorage/bin;/path/to/project/node_modules/npm/bin',
+            EDITOR_SDK7: 'true'
           },
         })
       )
