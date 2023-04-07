@@ -9,13 +9,13 @@ import { ServerName } from './types'
  * @param server The name of the server
  * @returns The url of that server
  */
-export async function getServerUrl(server: ServerName, withParams: boolean = true) {
+export async function getServerUrl(server: ServerName) {
   const hasLocalServer = process.env.LOCAL_DEV_SERVER === server
   const port = hasLocalServer
     ? Number(process.env.LOCAL_DEV_PORT || 3000)
     : await getPort(server)
   const url = await env.asExternalUri(Uri.parse(`http://localhost:${port}`))
-  return url.toString() + (withParams ? getServerParams(server) : '')
+  return url.toString() + getServerParams(server)
 }
 
 /**

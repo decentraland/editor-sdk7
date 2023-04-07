@@ -18,22 +18,23 @@ export async function createWebview() {
     path.join(getExtensionPath(), 'resources', 'logo.ico')
   )
 
-  const dataLayerRpcUrl = (await getServerUrl(ServerName.RunScene, false)).replace('http://', "ws://") + 'data-layer'
-  const url = new URL(await getServerUrl(ServerName.Inspector))
-  url.searchParams.set('ws', dataLayerRpcUrl)
+  const dataLayerUrl = new URL(await getServerUrl(ServerName.RunScene))
+  dataLayerUrl.pathname = '/data-layer'
+  dataLayerUrl.search = ''
+  dataLayerUrl.protocol = 'ws:'
+  const dataLayerRpcWsUrl = dataLayerUrl.toString() 
 
-  await waitForServer(url.toString())
+  const url = await getServerUrl(ServerName.Inspector)
+  await waitForServer(url)
+
   const html = await fetch(url).then((res) => res.text())
+
+  const config = {
+    dataLayerRpcWsUrl: dataLayerRpcWsUrl
+  }
   
   panel.webview.html = html
     .replace('bundle.js', `${url}/bundle.js`)
     .replace('bundle.css', `${url}/bundle.css`)
-    .replace('</html>', `
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  urlParams.set('ws', '${dataLayerRpcUrl}');
-  window.location.search = urlParams;
-</script>
-
-</html>`)
+    .replace(/(const config = ')(\$CONFIG)(')/gi, `$1${JSON.stringify(config)}$3`)
 }
