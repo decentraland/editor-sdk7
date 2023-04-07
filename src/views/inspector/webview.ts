@@ -18,10 +18,23 @@ export async function createWebview() {
     path.join(getExtensionPath(), 'resources', 'logo.ico')
   )
 
+  const dataLayerUrl = new URL(await getServerUrl(ServerName.RunScene))
+  dataLayerUrl.pathname = '/data-layer'
+  dataLayerUrl.search = ''
+  dataLayerUrl.protocol = 'ws:'
+  const dataLayerRpcWsUrl = dataLayerUrl.toString() 
+
   const url = await getServerUrl(ServerName.Inspector)
   await waitForServer(url)
+
   const html = await fetch(url).then((res) => res.text())
+
+  const config = {
+    dataLayerRpcWsUrl: dataLayerRpcWsUrl
+  }
+  
   panel.webview.html = html
     .replace('bundle.js', `${url}/bundle.js`)
     .replace('bundle.css', `${url}/bundle.css`)
+    .replace(/(const config = ')(\$CONFIG)(')/gi, `$1${JSON.stringify(config)}$3`)
 }
