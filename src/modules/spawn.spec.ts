@@ -158,10 +158,9 @@ describe('When spawning a child process', () => {
       expect.any(String),
       expect.any(Array),
       expect.objectContaining({
-        env: {
+        env: expect.objectContaining({
           PATH: '/usr/bin;/globalStorage/bin;/path/to/project/node_modules/npm/bin',
-          EDITOR_SDK7: "true"
-        },
+        }),
       })
     )
   })
@@ -214,10 +213,9 @@ describe('When spawning a child process', () => {
         expect.any(String),
         expect.any(Array),
         expect.objectContaining({
-          env: {
+          env: expect.objectContaining({
             PATH: '/custom/path;/globalStorage/bin;/path/to/project/node_modules/npm/bin',
-            EDITOR_SDK7: 'true'
-          },
+          }),
         })
       )
     })
@@ -438,5 +436,17 @@ describe('When spawning a child process', () => {
         expect(promise).resolves.toBe(void 0)
       })
     })
+  })
+  it('should add the the EDITOR_SDK env var to the child process env', () => {
+    spawn('id', 'command')
+    expect(crossSpawnMock).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(Array),
+      expect.objectContaining({
+        env: expect.objectContaining({
+          EDITOR_SDK7: 'true',
+        }),
+      })
+    )
   })
 })
