@@ -29,7 +29,7 @@ class PublishSceneServer extends Server {
   async waitForPublish() {
     if (this.child && !this.isStopping) {
       const success = await Promise.race([
-        this.child.waitFor(/content uploaded/gi, /error/gi).then(() => true),
+        this.child.waitFor(/content uploaded/gi, /failed/gi).then(() => true),
         this.child.wait().then(() => false),
       ])
       /*
