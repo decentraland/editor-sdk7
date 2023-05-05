@@ -30,7 +30,7 @@ class RunSceneServer extends Server {
       `--port ${await this.getPort()}`,
       '--no-browser',
       '--skip-install',
-      '--data-layer'
+      '--data-layer',
     ])
 
     this.child.process.on('close', async (code) => {
@@ -54,7 +54,7 @@ class RunSceneServer extends Server {
 
   async onStop() {
     if (this.child && this.child.alive()) {
-      this.child.kill()
+      await this.child.kill()
     }
   }
 }
