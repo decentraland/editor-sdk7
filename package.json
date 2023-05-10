@@ -420,7 +420,7 @@
     "semi": false
   },
   "dependencies": {
-    "@dcl/inspector": "7.1.9",
+    "@dcl/inspector": "7.1.10",
     "@dcl/schemas": "^5.18.1",
     "@dcl/sdk": "7.1.10",
     "@dcl/wearable-preview": "^1.14.0",
