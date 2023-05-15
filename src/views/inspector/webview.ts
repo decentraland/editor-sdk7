@@ -22,7 +22,7 @@ export async function createWebview() {
   dataLayerUrl.pathname = '/data-layer'
   dataLayerUrl.search = ''
   dataLayerUrl.protocol = 'ws:'
-  const dataLayerRpcWsUrl = dataLayerUrl.toString() 
+  const dataLayerRpcWsUrl = dataLayerUrl.toString()
 
   const url = await getServerUrl(ServerName.Inspector)
   await waitForServer(url)
@@ -30,11 +30,14 @@ export async function createWebview() {
   const html = await fetch(url).then((res) => res.text())
 
   const config = {
-    dataLayerRpcWsUrl: dataLayerRpcWsUrl
+    dataLayerRpcWsUrl: dataLayerRpcWsUrl,
   }
-  
+
   panel.webview.html = html
     .replace('bundle.js', `${url}/bundle.js`)
     .replace('bundle.css', `${url}/bundle.css`)
-    .replace(/(const config = ')(\$CONFIG)(')/gi, `$1${JSON.stringify(config)}$3`)
+    .replace(
+      /(const config = ')(\$CONFIG)(')/gi,
+      `$1${JSON.stringify(config)}$3`
+    )
 }

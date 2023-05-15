@@ -1,8 +1,8 @@
 import path from 'path'
-import { getExtensionPath } from '../../modules/path'
 import { StaticServer } from '../../modules/server'
 import { ServerName } from '../../types'
+import { getCwd } from '../../modules/workspace'
 
 export const inspectorServer = new StaticServer(ServerName.Inspector, () =>
-  path.join(getExtensionPath(), './node_modules/@dcl/inspector/public')
+  path.join(getCwd(), './node_modules/@dcl/inspector/public')
 )
