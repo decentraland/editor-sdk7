@@ -1,8 +1,13 @@
 import path from 'path'
-import { getExtensionPath } from '../../modules/path'
 import { StaticServer } from '../../modules/server'
 import { ServerName } from '../../types'
+import { getCwd } from '../../modules/workspace'
+import { log } from '../../modules/log'
 
-export const inspectorServer = new StaticServer(ServerName.Inspector, () =>
-  path.join(getExtensionPath(), './node_modules/@dcl/inspector/public')
-)
+export const inspectorServer = new StaticServer(ServerName.Inspector, () => {
+  const inspectorPath = path.dirname(
+    require.resolve('@dcl/inspector/package.json', { paths: [getCwd()] })
+  )
+  log('Serving inspector from:', inspectorPath)
+  return path.join(inspectorPath, './public')
+})

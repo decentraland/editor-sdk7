@@ -1,3 +1,4 @@
+import semver from 'semver'
 import { log } from './log'
 import { npmInstall } from './npm'
 import { getPackageVersion } from './pkg'
@@ -9,11 +10,11 @@ export async function syncSdkVersion() {
     // no need to sync if the workspace does not have a dependency on @dcl/sdk
     return
   }
-  if (extensionSdkVersion !== workspaceSdkVersion) {
+  if (semver.lt(workspaceSdkVersion, extensionSdkVersion!)) {
     log(`Extension @dcl/sdk version: ${extensionSdkVersion}`)
     log(`Workspace @dcl/sdk version: ${workspaceSdkVersion}`)
     log(
-      `Workspace @dcl/sdk version is different than the extension\'s, installing @dcl/sdk@${extensionSdkVersion} into workspace...`
+      `Workspace @dcl/sdk version is older than the extension\'s, installing @dcl/sdk@${extensionSdkVersion} into workspace...`
     )
     await npmInstall(`@dcl/sdk@${extensionSdkVersion}`)
   }
