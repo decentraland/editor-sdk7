@@ -45,7 +45,7 @@ class RunSceneServer extends Server {
       'Starting server...',
       async () =>
         Promise.race([
-          this.child!.waitFor(/server is now running/gi, /error/gi),
+          this.child!.waitFor(/server is now running/gi),
           this.child!.wait(),
         ]),
       ProgressLocation.Window
