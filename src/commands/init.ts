@@ -4,21 +4,20 @@ import { npmInstall } from '../modules/npm'
 import { bin } from '../modules/bin'
 
 export async function init() {
-
   // TODO: should we get the options from sdk-commands?
   const scaffoldedScenesOptions = [
     {
-      name: 'Inspector project (alpha)', 
-      sceneParam: 'editor-scene-template'
+      name: 'Standard project',
+      sceneParam: 'scene-template',
     },
     {
-      name: 'Standard project', 
-      sceneParam: 'scene-template'
-    }
+      name: 'Inspector project (alpha)',
+      sceneParam: 'editor-scene-template',
+    },
   ]
 
   const selected = await vscode.window.showQuickPick(
-    scaffoldedScenesOptions.map(item => item.name),
+    scaffoldedScenesOptions.map((item) => item.name),
     {
       ignoreFocusOut: true,
       title: 'Create Project',
@@ -29,13 +28,15 @@ export async function init() {
   if (!selected) {
     return
   }
-  const scaffoldedScene = scaffoldedScenesOptions.find((option) => option.name === selected)!
+  const scaffoldedScene = scaffoldedScenesOptions.find(
+    (option) => option.name === selected
+  )!
 
   const child = bin('@dcl/sdk-commands', 'sdk-commands', [
     'init',
     '--skip-install',
     '--project',
-    scaffoldedScene.sceneParam
+    scaffoldedScene.sceneParam,
   ])
 
   await loader(
