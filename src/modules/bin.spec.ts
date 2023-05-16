@@ -88,7 +88,12 @@ describe('bin', () => {
       expect(spawn).toBeCalledWith(
         expect.any(String),
         expect.any(String),
-        [convertSlashToInvertSlashIfWin32('/extension/node_modules/decentraland/index.js'), expect.any(String)],
+        [
+          convertSlashToInvertSlashIfWin32(
+            '/extension/node_modules/decentraland/index.js'
+          ),
+          expect.any(String),
+        ],
         expect.any(Object)
       )
     }),
@@ -160,7 +165,9 @@ describe('bin', () => {
         bin('decentraland', 'dcl')
         expect(spawn).toBeCalledWith(
           expect.any(String),
-          convertSlashToInvertSlashIfWin32('"/globalStorage with white spaces/node"'),
+          convertSlashToInvertSlashIfWin32(
+            '"/globalStorage with white spaces/node"'
+          ),
           [expect.any(String)],
           expect.any(Object)
         )
@@ -220,7 +227,7 @@ describe('bin', () => {
         expect(cmdShimMock).toHaveBeenCalledWith('path/to/bin', 'path/to/file')
       })
     })
-    describe('and the platform is Windows', () => {
+    describe('and the platform is darwin', () => {
       beforeEach(() => {
         Object.defineProperty(process, 'platform', {
           value: 'darwin',
