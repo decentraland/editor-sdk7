@@ -66,6 +66,11 @@
       },
       {
         "view": "decentraland-sdk7.home",
+        "contents": "You can inspect & edit your scene:\n[Open Inspector](command:decentraland-sdk7.commands.inspector)",
+        "when": "workbenchState != empty && decentraland-sdk7.isDCL && !decentraland.isEmpty"
+      },
+      {
+        "view": "decentraland-sdk7.home",
         "contents": "You can preview and try out your scene:\n[Run Scene](command:decentraland-sdk7.commands.start)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL"
       },
@@ -171,6 +176,12 @@
         "category": "Decentraland"
       },
       {
+        "command": "decentraland-sdk7.commands.inspector",
+        "title": "Open Inspector",
+        "icon": "$(play)",
+        "category": "Decentraland"
+      },
+      {
         "command": "decentraland-sdk7.commands.getDebugURL",
         "title": "Get Debug URL",
         "category": "Decentraland"
@@ -179,12 +190,6 @@
         "command": "decentraland-sdk7.commands.restart",
         "title": "Restart Server",
         "icon": "$(debug-restart)",
-        "category": "Decentraland"
-      },
-      {
-        "command": "decentraland-sdk7.commands.inspector",
-        "title": "Open Inspector",
-        "icon": "$(play)",
         "category": "Decentraland"
       }
     ],
@@ -251,11 +256,6 @@
           "command": "decentraland-sdk7.commands.browser.web3",
           "when": "view == decentraland-sdk7.home && decentraland-sdk7.isDCL",
           "group": "1_actions@4"
-        },
-        {
-          "command": "decentraland-sdk7.commands.inspector",
-          "when": "view == decentraland-sdk7.home && decentraland-sdk7.isDCL",
-          "group": "1_actions@5"
         },
         {
           "command": "decentraland-sdk7.commands.restart",
