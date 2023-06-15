@@ -10,10 +10,6 @@ export async function init() {
       name: 'Standard project',
       sceneParam: 'scene-template',
     },
-    {
-      name: 'Inspector project (alpha)',
-      sceneParam: 'editor-scene-template',
-    },
   ]
 
   const selected = await vscode.window.showQuickPick(
