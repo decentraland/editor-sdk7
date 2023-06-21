@@ -35,7 +35,8 @@ export async function createWebivew() {
       // messages of type logger.error for some reason come stringified, thus wrapped in extra double quotes
       if (message.type === 'logger.error') {
         try {
-          text = JSON.parse(text)
+          const textAsJson = JSON.parse(text)
+          if (textAsJson.message) text = textAsJson.message
         } catch (e) {
           // false alarm, proceed
         }
