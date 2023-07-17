@@ -10,6 +10,10 @@ export async function init() {
       name: 'Standard project',
       sceneParam: 'scene-template',
     },
+    {
+      name: 'Portable experience',
+      sceneParam: 'px-template',
+    },
   ]
 
   const selected = await vscode.window.showQuickPick(
