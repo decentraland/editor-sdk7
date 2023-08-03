@@ -11,8 +11,9 @@ class PublishSceneServer extends Server {
   }
 
   async onStart(...args: string[]) {
-    this.child = bin('@dcl/sdk-commands', 'sdk-commands', [
-      'deploy',
+    this.child = bin('npm', 'npm', [
+      'run deploy',
+      '--',
       `--port ${await this.getPort()}`,
       `--no-browser`,
       ...args,
