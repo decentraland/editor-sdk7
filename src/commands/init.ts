@@ -14,6 +14,10 @@ export async function init() {
       name: 'Portable experience',
       sceneParam: 'px-template',
     },
+    {
+      name: 'Smart Wearable',
+      sceneParam: 'smart-wearable',
+    },
   ]
 
   const selected = await vscode.window.showQuickPick(
