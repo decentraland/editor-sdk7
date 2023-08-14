@@ -25,9 +25,11 @@ export async function getServerUrl(server: ServerName) {
  */
 
 export function getServerParams(server: ServerName) {
+  // TODO: Remove this when the explorer fixes the new backpack for the preview
+  const oldBackpack = '&DISABLE_backpack_editor_v2=&ENABLE_backpack_editor_v1'
   switch (server) {
     case ServerName.RunScene:
-      return `?position=${encodeURI(getScene().scene.base)}&PIPE_SCENE_CONSOLE`
+      return `?position=${encodeURI(getScene().scene.base)}&PIPE_SCENE_CONSOLE${oldBackpack}`
     case ServerName.PublishScene:
       return getLocalValue<boolean>('isWorld') ? `?skipValidations=true` : ''
     default:
