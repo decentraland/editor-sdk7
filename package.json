@@ -422,7 +422,7 @@
   "dependencies": {
     "@dcl/inspector": "7.3.4",
     "@dcl/schemas": "^5.18.1",
-    "@dcl/sdk": "^7.3.14",
+    "@dcl/sdk": "7.3.14",
     "@dcl/wearable-preview": "^1.14.0",
     "@sentry/node": "^7.64.0",
     "@types/analytics-node": "^3.1.9",
