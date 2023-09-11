@@ -31,6 +31,7 @@ export async function createWebview() {
 
   const config = {
     dataLayerRpcWsUrl: dataLayerRpcWsUrl,
+    disableSmartItems: true,
   }
 
   panel.webview.html = html
