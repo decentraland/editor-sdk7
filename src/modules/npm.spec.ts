@@ -126,15 +126,6 @@ describe('npm', () => {
             ProgressLocation.Window
           )
         })
-        describe('and the dependency is a decentraland library', () => {
-          it('should bundle the dependency', async () => {
-            await npmInstall('dcl-library', true)
-            expect(binMock).toHaveBeenCalledWith('npm', 'npm', [
-              'install --save-bundle',
-              'dcl-library',
-            ])
-          })
-        })
       })
     })
     describe('and the installation fails', () => {

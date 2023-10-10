@@ -25,16 +25,19 @@ export async function notifyUpdate(
 
   // Check if the version has been an updated and notify if so
   if (semver.gt(currentVersion, prevVersion)) {
-    const didClick = await vscode.window.showInformationMessage(
-      `${title} has been updated to v${currentVersion}!`,
-      `Learn More`
-    )
-    if (didClick) {
-      await vscode.env.openExternal(
-        vscode.Uri.parse(
-          `https://github.com/${repo}/releases/tag/${currentVersion}`
-        )
+    void vscode.window
+      .showInformationMessage(
+        `${title} has been updated to v${currentVersion}!`,
+        `Learn More`
       )
-    }
+      .then((didClick) => {
+        if (didClick) {
+          return vscode.env.openExternal(
+            vscode.Uri.parse(
+              `https://github.com/${repo}/releases/tag/${currentVersion}`
+            )
+          )
+        }
+      })
   }
 }

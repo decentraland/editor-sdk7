@@ -5,6 +5,8 @@ import { getExtensionPath } from '../../modules/path'
 import { waitForServer } from '../../modules/server'
 import { ServerName } from '../../types'
 import { getServerUrl } from '../../utils'
+import { hasDependency } from '../../modules/pkg'
+import { log } from '../../modules/log'
 
 export async function createWebview() {
   const panel = vscode.window.createWebviewPanel(
@@ -29,9 +31,17 @@ export async function createWebview() {
 
   const html = await fetch(url).then((res) => res.text())
 
+  const hasAssetPacksInstalled = hasDependency('@dcl/asset-packs', true)
+
+  log(
+    hasAssetPacksInstalled
+      ? '@dcl/asset-packs is installed'
+      : '@dcl/asset-packs is not installed'
+  )
+
   const config = {
     dataLayerRpcWsUrl: dataLayerRpcWsUrl,
-    disableSmartItems: true,
+    disableSmartItems: !hasAssetPacksInstalled,
   }
 
   panel.webview.html = html
