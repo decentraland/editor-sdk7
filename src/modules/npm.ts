@@ -12,17 +12,14 @@ import { getMessage } from './error'
  * @param dependencies List of npm packages
  * @returns Promise that resolves when the install finishes
  */
-export async function npmInstall(dependency?: string, isLibrary = false) {
+export async function npmInstall(dependency?: string) {
   try {
     return await loader(
       dependency ? `Installing ${dependency}...` : `Installing dependencies...`,
       async () => {
         await runSceneServer.stop()
         track(`npm.install`, { dependency: dependency || null })
-        await bin('npm', 'npm', [
-          dependency && isLibrary ? 'install --save-bundle' : 'install',
-          dependency,
-        ]).wait()
+        await bin('npm', 'npm', ['install', dependency]).wait()
         await restart() // restart server after installing packages
       },
       dependency
