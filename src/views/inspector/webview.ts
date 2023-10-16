@@ -7,6 +7,7 @@ import { ServerName } from '../../types'
 import { getServerUrl } from '../../utils'
 import { hasDependency } from '../../modules/pkg'
 import { log } from '../../modules/log'
+import { getUserId } from '../../modules/analytics'
 
 export async function createWebview() {
   const panel = vscode.window.createWebviewPanel(
@@ -42,7 +43,12 @@ export async function createWebview() {
   const config = {
     dataLayerRpcWsUrl: dataLayerRpcWsUrl,
     disableSmartItems: !hasAssetPacksInstalled,
+    segmentKey: process.env.DCL_INSPECTOR_SDK7_SEGMENT_KEY,
+    segmentAppId: process.env.DCL_INSPECTOR_SDK7_SEGMENT_APP_ID,
+    segmentUserId: getUserId(),
   }
+
+  log(JSON.stringify(config))
 
   panel.webview.html = html
     .replace('bundle.js', `${url}/bundle.js`)
