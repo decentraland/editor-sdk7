@@ -44,11 +44,9 @@ export async function createWebview() {
     dataLayerRpcWsUrl: dataLayerRpcWsUrl,
     disableSmartItems: !hasAssetPacksInstalled,
     segmentKey: process.env.DCL_INSPECTOR_SDK7_SEGMENT_KEY,
-    segmentAppId: process.env.DCL_INSPECTOR_SDK7_SEGMENT_APP_ID,
+    segmentAppId: 'editor',
     segmentUserId: getUserId(),
   }
-
-  log(JSON.stringify(config))
 
   panel.webview.html = html
     .replace('bundle.js', `${url}/bundle.js`)
