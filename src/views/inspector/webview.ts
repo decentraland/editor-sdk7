@@ -7,7 +7,7 @@ import { ServerName } from '../../types'
 import { getServerUrl } from '../../utils'
 import { hasDependency } from '../../modules/pkg'
 import { log } from '../../modules/log'
-import { getUserId } from '../../modules/analytics'
+import { getProjectId, getUserId } from '../../modules/analytics'
 
 export async function createWebview() {
   const panel = vscode.window.createWebviewPanel(
@@ -46,6 +46,7 @@ export async function createWebview() {
     segmentKey: process.env.DCL_INSPECTOR_SDK7_SEGMENT_KEY,
     segmentAppId: 'editor',
     segmentUserId: getUserId(),
+    projectId: getProjectId(),
   }
 
   panel.webview.html = html

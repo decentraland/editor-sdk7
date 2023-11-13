@@ -5,6 +5,7 @@ import { getGlobalValue, setGlobalValue } from './storage'
 import { getPackageJson } from './pkg'
 
 const ANALYTICS_USER_ID_STORAGE_KEY = 'analytics-user-id'
+const ANALYTICS_PROJECT_ID_STORAGE_KEY = 'analytics-project-id'
 
 let analytics: Analytics | null
 
@@ -40,6 +41,18 @@ export function getUserId() {
     setGlobalValue(ANALYTICS_USER_ID_STORAGE_KEY, userId)
   }
   return userId as string
+}
+
+export function getProjectId() {
+  let projectId = getGlobalValue(ANALYTICS_PROJECT_ID_STORAGE_KEY) as
+    | string
+    | undefined
+    | null
+  if (!projectId || typeof projectId !== 'string') {
+    projectId = uuid()
+    setGlobalValue(ANALYTICS_PROJECT_ID_STORAGE_KEY, projectId)
+  }
+  return projectId as string
 }
 
 export function getAnalytics() {
