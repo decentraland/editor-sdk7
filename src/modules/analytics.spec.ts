@@ -2,6 +2,7 @@ import {
   activateAnalytics,
   deactivateAnalytics,
   getAnalytics,
+  getProjectId,
   track,
 } from './analytics'
 
@@ -195,6 +196,43 @@ describe('analytics', () => {
   describe('When calling track() before activating analytics', () => {
     it('should not throw', () => {
       expect(() => track('event-name')).not.toThrow()
+    })
+  })
+})
+
+describe('getProjectId', () => {
+  describe('When the project ID is not stored in global state', () => {
+    beforeEach(() => {
+      getGlobalValueMock.mockReturnValueOnce(null)
+      uuidMock.mockReturnValue('project-id')
+    })
+    afterEach(() => {
+      getGlobalValueMock.mockReset()
+      setGlobalValueMock.mockReset()
+      uuidMock.mockReset()
+    })
+    it('should create a project ID and store in global state', () => {
+      expect(getProjectId()).toBe('project-id')
+      expect(getGlobalValueMock).toHaveBeenCalledWith('analytics-project-id')
+      expect(setGlobalValueMock).toHaveBeenCalledWith(
+        'analytics-project-id',
+        'project-id'
+      )
+    })
+  })
+  describe('When the project ID is already stored in global state', () => {
+    beforeEach(() => {
+      getGlobalValueMock.mockReturnValueOnce('project-id')
+    })
+    afterEach(() => {
+      getGlobalValueMock.mockReset()
+      setGlobalValueMock.mockReset()
+      uuidMock.mockReset()
+    })
+    it('should re-use the ID from global state', () => {
+      expect(getProjectId()).toBe('project-id')
+      expect(uuidMock).not.toHaveBeenCalled()
+      expect(setGlobalValueMock).not.toHaveBeenCalled()
     })
   })
 })
