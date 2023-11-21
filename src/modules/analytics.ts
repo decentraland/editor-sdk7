@@ -1,7 +1,12 @@
 import { uuid } from 'uuidv4'
 import Analytics from 'analytics-node'
 import { log } from './log'
-import { getGlobalValue, setGlobalValue } from './storage'
+import {
+  getGlobalValue,
+  getLocalValue,
+  setGlobalValue,
+  setLocalValue,
+} from './storage'
 import { getPackageJson } from './pkg'
 
 const ANALYTICS_USER_ID_STORAGE_KEY = 'analytics-user-id'
@@ -44,13 +49,13 @@ export function getUserId() {
 }
 
 export function getProjectId() {
-  let projectId = getGlobalValue(ANALYTICS_PROJECT_ID_STORAGE_KEY) as
+  let projectId = getLocalValue(ANALYTICS_PROJECT_ID_STORAGE_KEY) as
     | string
     | undefined
     | null
   if (!projectId || typeof projectId !== 'string') {
     projectId = uuid()
-    setGlobalValue(ANALYTICS_PROJECT_ID_STORAGE_KEY, projectId)
+    setLocalValue(ANALYTICS_PROJECT_ID_STORAGE_KEY, projectId)
   }
   return projectId as string
 }

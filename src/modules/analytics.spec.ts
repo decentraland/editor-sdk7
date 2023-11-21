@@ -14,13 +14,24 @@ import { log } from './log'
 jest.mock('./log')
 const logMock = log as jest.MockedFunction<typeof log>
 
-import { getGlobalValue, setGlobalValue } from './storage'
+import {
+  getGlobalValue,
+  getLocalValue,
+  setGlobalValue,
+  setLocalValue,
+} from './storage'
 jest.mock('./storage')
 const getGlobalValueMock = getGlobalValue as jest.MockedFunction<
   typeof getGlobalValue
 >
 const setGlobalValueMock = setGlobalValue as jest.MockedFunction<
   typeof setGlobalValue
+>
+const getLocalValueMock = getLocalValue as jest.MockedFunction<
+  typeof getLocalValue
+>
+const setLocalValueMock = setLocalValue as jest.MockedFunction<
+  typeof setLocalValue
 >
 
 import { getPackageJson } from './pkg'
@@ -203,18 +214,18 @@ describe('analytics', () => {
 describe('getProjectId', () => {
   describe('When the project ID is not stored in global state', () => {
     beforeEach(() => {
-      getGlobalValueMock.mockReturnValueOnce(null)
+      getLocalValueMock.mockReturnValueOnce(null)
       uuidMock.mockReturnValue('project-id')
     })
     afterEach(() => {
-      getGlobalValueMock.mockReset()
-      setGlobalValueMock.mockReset()
+      getLocalValueMock.mockReset()
+      setLocalValueMock.mockReset()
       uuidMock.mockReset()
     })
     it('should create a project ID and store in global state', () => {
       expect(getProjectId()).toBe('project-id')
-      expect(getGlobalValueMock).toHaveBeenCalledWith('analytics-project-id')
-      expect(setGlobalValueMock).toHaveBeenCalledWith(
+      expect(getLocalValueMock).toHaveBeenCalledWith('analytics-project-id')
+      expect(setLocalValueMock).toHaveBeenCalledWith(
         'analytics-project-id',
         'project-id'
       )
@@ -222,17 +233,17 @@ describe('getProjectId', () => {
   })
   describe('When the project ID is already stored in global state', () => {
     beforeEach(() => {
-      getGlobalValueMock.mockReturnValueOnce('project-id')
+      getLocalValueMock.mockReturnValueOnce('project-id')
     })
     afterEach(() => {
-      getGlobalValueMock.mockReset()
-      setGlobalValueMock.mockReset()
+      getLocalValueMock.mockReset()
+      setLocalValueMock.mockReset()
       uuidMock.mockReset()
     })
     it('should re-use the ID from global state', () => {
       expect(getProjectId()).toBe('project-id')
       expect(uuidMock).not.toHaveBeenCalled()
-      expect(setGlobalValueMock).not.toHaveBeenCalled()
+      expect(setLocalValueMock).not.toHaveBeenCalled()
     })
   })
 })
