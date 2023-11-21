@@ -15,7 +15,12 @@ export function validateSceneJson() {
         'You need to add a "name" property to the "worldConfiguration" section in your scene.json'
       )
     }
-    if (!scene.worldConfiguration.name.endsWith('.dcl.eth')) {
+
+    const isValidName =
+      scene.worldConfiguration.name.endsWith('.dcl.eth') ||
+      scene.worldConfiguration.name.endsWith('.eth')
+
+    if (!isValidName) {
       throw new Error(
         'The name of your world in your scene.json must end with ".dcl.eth"'
       )
