@@ -16,9 +16,7 @@ export function validateSceneJson() {
       )
     }
 
-    const isValidName =
-      scene.worldConfiguration.name.endsWith('.dcl.eth') ||
-      scene.worldConfiguration.name.endsWith('.eth')
+    const isValidName = scene.worldConfiguration.name.endsWith('.eth')
 
     if (!isValidName) {
       throw new Error(
