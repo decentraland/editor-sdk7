@@ -20,7 +20,7 @@ export function validateSceneJson() {
 
     if (!isValidName) {
       throw new Error(
-        'The name of your world in your scene.json must end with ".dcl.eth"'
+        'The name of your world in your scene.json must end with ".dcl.eth or .eth"'
       )
     }
   } else {
