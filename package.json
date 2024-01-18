@@ -420,8 +420,9 @@
     "semi": false
   },
   "dependencies": {
+    "@dcl/inspector": "https://sdk-team-cdn.decentraland.org/@dcl/js-sdk-toolchain/branch/shape-up-4/multiplayer-smart-items/@dcl/inspector/dcl-inspector-7.3.38-7627909263.commit-ae0567b.tgz",
     "@dcl/schemas": "^5.18.1",
-    "@dcl/sdk": "^7.3.35",
+    "@dcl/sdk": "https://sdk-team-cdn.decentraland.org/@dcl/js-sdk-toolchain/branch/shape-up-4/multiplayer-smart-items/dcl-sdk-7.3.38-7627909263.commit-ae0567b.tgz",
     "@dcl/wearable-preview": "^1.14.0",
     "@sentry/node": "^7.64.0",
     "@types/analytics-node": "^3.1.9",
