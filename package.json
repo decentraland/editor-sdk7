@@ -66,17 +66,17 @@
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "You can inspect & edit your scene:\n[Open Inspector](command:decentraland-sdk7.commands.inspector)",
+        "contents": "You can inspect & edit your scene:\n[Visual Editor](command:decentraland-sdk7.commands.inspector)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL && !decentraland.isEmpty"
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "You can preview and try out your scene:\n[Run Scene](command:decentraland-sdk7.commands.start)",
+        "contents": "You can preview and try out your scene:\n[Run Scene](command:decentraland-sdk7.commands.browser.run)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL"
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "Once you are done building your scene, you can publish it to Genesis City:\n[Publish Scene](command:decentraland-sdk7.commands.deploy)",
+        "contents": "Once you are done building your scene, you can publish it to Genesis City:\n[Publish Scene](command:decentraland-sdk7.commands.browser.deploy)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL"
       }
     ],
@@ -177,9 +177,9 @@
       },
       {
         "command": "decentraland-sdk7.commands.inspector",
-        "title": "Open Inspector",
+        "title": "Visual Editor",
         "icon": "$(play)",
-        "category": "Decentraland"
+        "category": "Decentraland Editor"
       },
       {
         "command": "decentraland-sdk7.commands.getDebugURL",
