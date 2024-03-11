@@ -4,7 +4,6 @@ import { npmInstall } from '../modules/npm'
 import { bin } from '../modules/bin'
 
 export async function init() {
-  // TODO: should we get the options from sdk-commands?
   const scaffoldedScenesOptions = [
     {
       name: 'Standard project',
@@ -18,7 +17,11 @@ export async function init() {
       name: 'Smart Wearable',
       sceneParam: 'smart-wearable',
     },
-  ]
+    {
+      name: 'Github Repository',
+      sceneParam: 'github-repo',
+    },
+  ] as const
 
   const selected = await vscode.window.showQuickPick(
     scaffoldedScenesOptions.map((item) => item.name),
@@ -29,18 +32,30 @@ export async function init() {
     }
   )
 
+
   if (!selected) {
     return
   }
+
   const scaffoldedScene = scaffoldedScenesOptions.find(
     (option) => option.name === selected
   )!
 
+  let githubRepo: string | undefined
+  if (scaffoldedScene.sceneParam === 'github-repo' ) {
+    githubRepo = await vscode.window.showInputBox({
+      title: 'Insert github repository url _(or subfolder link)_',
+      placeHolder: 'https://github.com/decentraland/sdk7-goerli-plaza/tree/main/Cube'
+    })
+  }
+
+  const opts = githubRepo
+    ? ['--github-repo', githubRepo]
+    : ['--project', scaffoldedScene.sceneParam]
   const child = bin('@dcl/sdk-commands', 'sdk-commands', [
     'init',
     '--skip-install',
-    '--project',
-    scaffoldedScene.sceneParam,
+    ...opts
   ])
 
   await loader(

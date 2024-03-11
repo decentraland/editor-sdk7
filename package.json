@@ -421,7 +421,7 @@
   },
   "dependencies": {
     "@dcl/schemas": "^5.18.1",
-    "@dcl/sdk": "^7.4.9",
+    "@dcl/sdk": "https://sdk-team-cdn.decentraland.org/@dcl/js-sdk-toolchain/branch/feat/clone-git-subfolder/dcl-sdk-7.4.8-8236802268.commit-137cff3.tgz",
     "@dcl/wearable-preview": "^1.14.0",
     "@sentry/node": "^7.64.0",
     "@types/analytics-node": "^3.1.9",
