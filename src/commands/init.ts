@@ -47,6 +47,7 @@ export async function init() {
       title: 'Insert github repository url _(or subfolder link)_',
       placeHolder: 'https://github.com/decentraland/sdk7-goerli-plaza/tree/main/Cube'
     })
+    if (!githubRepo) return
   }
 
   const opts = githubRepo
