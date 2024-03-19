@@ -18,7 +18,7 @@ export async function init() {
       sceneParam: 'smart-wearable',
     },
     {
-      name: 'Github Repository',
+      name: 'From Github Repository',
       sceneParam: 'github-repo',
     },
   ] as const
@@ -43,9 +43,13 @@ export async function init() {
 
   let githubRepo: string | undefined
   if (scaffoldedScene.sceneParam === 'github-repo' ) {
+    const value = 'https://github.com/decentraland/sdk7-goerli-plaza/tree/main/Cube'
     githubRepo = await vscode.window.showInputBox({
-      title: 'Insert github repository url _(or subfolder link)_',
-      placeHolder: 'https://github.com/decentraland/sdk7-goerli-plaza/tree/main/Cube'
+      valueSelection: [0, value.length],
+      value,
+      prompt: 'See https://studios.decentraland.org/resoruces for examples, use “View Code” links\n',
+      title: 'Paste the full URL to a Decentraland project on Github to clone it.',
+      placeHolder: value,
     })
     if (!githubRepo) return
   }
