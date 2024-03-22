@@ -21,6 +21,10 @@ export async function init() {
       name: 'From Github Repository',
       sceneParam: 'github-repo',
     },
+    {
+      name: 'Library',
+      sceneParam: 'library',
+    },
   ] as const
 
   const selected = await vscode.window.showQuickPick(
