@@ -62,7 +62,7 @@
       {
         "view": "decentraland-sdk7.home",
         "contents": "The current folder does not contain a Decentraland SDK7 project. Open a folder with an existing project, or an empty folder to scaffold a new project:\n[Open Folder](command:vscode.openFolder)\nTo learn more [read our docs](https://docs.decentraland.org/).",
-        "when": "workbenchState != dempty && !decentraland-sdk7.isDCL && !decentraland.isEmpty"
+        "when": "workbenchState != empty && !decentraland-sdk7.isDCL && !decentraland.isEmpty"
       },
       {
         "view": "decentraland-sdk7.home",
