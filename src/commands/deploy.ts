@@ -9,6 +9,10 @@ import {
   validateSceneJson,
 } from '../views/publish-scene/utils'
 import { publishSceneServer } from '../views/publish-scene/server'
+import { browser } from './browser'
+import { ServerName } from '../types'
+import { waitForServer } from '../modules/server'
+import { getServerUrl } from '../utils'
 
 export async function deploy(args: string = '', isWorld = false) {
   // Set world flag
@@ -17,38 +21,14 @@ export async function deploy(args: string = '', isWorld = false) {
   // Make sure the scene json is correct
   validateSceneJson()
 
-  // Create the webview
-  const webview = await createWebview()
-
   // Start the server
-  publishSceneServer.start(...args.split(' '))
-
-  // Listen for the user closing the webview
-  let didDispose
-  webview.onDispose(() => {
-    didDispose = true
-    publishSceneServer.stop()
-  })
-
-  // Open publish screen
-  try {
-    await loader('Opening publish screen...', () =>
-      Promise.race([webview.load(), publishSceneServer.waitForPublish()])
-    )
-  } catch (error) {
-    publishSceneServer.stop()
-    if (!didDispose) {
-      throw new Error('Something went wrong opening publish screen')
-    }
-    return
-  }
-
+  await publishSceneServer.start(...args.split(' '))
+  const url = await getServerUrl(ServerName.PublishScene)
+  await waitForServer(url)
+  browser(ServerName.PublishScene)
   try {
     // Wait for user to publish
     const success = await publishSceneServer.waitForPublish()
-
-    // Close view
-    webview.dispose()
 
     // If successful show jump in notification
     if (success) {

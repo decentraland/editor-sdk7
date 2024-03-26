@@ -66,17 +66,22 @@
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "You can inspect & edit your scene:\n[Visual Editor](command:decentraland-sdk7.commands.inspector)",
+        "contents": "Customize Your Scene:\nVisually arrange and adjust your scene with our visual inspector\n[Visual Editor](command:decentraland-sdk7.commands.inspector)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL && !decentraland.isEmpty"
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "You can preview and try out your scene:\n[Run Scene](command:decentraland-sdk7.commands.browser.run)",
+        "contents": "Test your project locally\nRun and review your scene locally.\n[Run Scene](command:decentraland-sdk7.commands.browser.run)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL"
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "Once you are done building your scene, you can publish it to Genesis City:\n[Publish Scene](command:decentraland-sdk7.commands.browser.deploy)",
+        "contents": "Ready to go live?\nPublish and open your scene to visitors in Genesis City.\n[Publish to Genesis City](command:decentraland-sdk7.commands.deploy)",
+        "when": "workbenchState != empty && decentraland-sdk7.isDCL"
+      },
+      {
+        "view": "decentraland-sdk7.home",
+        "contents": "[Publish to World](command:decentraland-sdk7.commands.deployWorld)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL"
       }
     ],
@@ -238,24 +243,19 @@
       ],
       "view/title": [
         {
-          "command": "decentraland-sdk7.commands.deployWorld",
+          "command": "decentraland-sdk7.commands.deployTest",
           "when": "view == decentraland-sdk7.home && decentraland-sdk7.isDCL",
           "group": "1_actions@1"
         },
         {
-          "command": "decentraland-sdk7.commands.deployTest",
+          "command": "decentraland-sdk7.commands.deployCustom",
           "when": "view == decentraland-sdk7.home && decentraland-sdk7.isDCL",
           "group": "1_actions@2"
         },
         {
-          "command": "decentraland-sdk7.commands.deployCustom",
-          "when": "view == decentraland-sdk7.home && decentraland-sdk7.isDCL",
-          "group": "1_actions@3"
-        },
-        {
           "command": "decentraland-sdk7.commands.browser.web3",
           "when": "view == decentraland-sdk7.home && decentraland-sdk7.isDCL",
-          "group": "1_actions@4"
+          "group": "1_actions@3"
         },
         {
           "command": "decentraland-sdk7.commands.restart",
@@ -421,7 +421,7 @@
   },
   "dependencies": {
     "@dcl/schemas": "^5.18.1",
-    "@dcl/sdk": "^7.4.9",
+    "@dcl/sdk": "^7.4.11",
     "@dcl/wearable-preview": "^1.14.0",
     "@sentry/node": "^7.64.0",
     "@types/analytics-node": "^3.1.9",

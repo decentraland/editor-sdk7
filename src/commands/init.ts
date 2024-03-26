@@ -4,7 +4,6 @@ import { npmInstall } from '../modules/npm'
 import { bin } from '../modules/bin'
 
 export async function init() {
-  // TODO: should we get the options from sdk-commands?
   const scaffoldedScenesOptions = [
     {
       name: 'Standard project',
@@ -18,7 +17,15 @@ export async function init() {
       name: 'Smart Wearable',
       sceneParam: 'smart-wearable',
     },
-  ]
+    {
+      name: 'From Github Repository',
+      sceneParam: 'github-repo',
+    },
+    {
+      name: 'Library',
+      sceneParam: 'library',
+    },
+  ] as const
 
   const selected = await vscode.window.showQuickPick(
     scaffoldedScenesOptions.map((item) => item.name),
@@ -29,18 +36,35 @@ export async function init() {
     }
   )
 
+
   if (!selected) {
     return
   }
+
   const scaffoldedScene = scaffoldedScenesOptions.find(
     (option) => option.name === selected
   )!
 
+  let githubRepo: string | undefined
+  if (scaffoldedScene.sceneParam === 'github-repo' ) {
+    const value = 'https://github.com/decentraland/sdk7-goerli-plaza/tree/main/Cube'
+    githubRepo = await vscode.window.showInputBox({
+      valueSelection: [0, value.length],
+      value,
+      prompt: 'See https://studios.decentraland.org/resoruces for examples, use “View Code” links\n',
+      title: 'Paste the full URL to a Decentraland project on Github to clone it.',
+      placeHolder: value,
+    })
+    if (!githubRepo) return
+  }
+
+  const opts = githubRepo
+    ? ['--github-repo', githubRepo]
+    : ['--project', scaffoldedScene.sceneParam]
   const child = bin('@dcl/sdk-commands', 'sdk-commands', [
     'init',
     '--skip-install',
-    '--project',
-    scaffoldedScene.sceneParam,
+    ...opts
   ])
 
   await loader(
