@@ -41,6 +41,10 @@ describe('log', () => {
       append('message')
       expect(appendSpy).toHaveBeenCalledWith('message')
     })
+    it('should remove ansii escape codes', () => {
+      append('\x1b[1mHello World!\x1b[0m')
+      expect(appendSpy).toHaveBeenCalledWith('Hello World!')
+    })
   })
   describe('When appending a line', () => {
     it('should append the message with a new line to the output channel', () => {

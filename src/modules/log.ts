@@ -7,7 +7,12 @@ export const output = vscode.window.createOutputChannel(`Decentraland SDK7`)
  * Append a message to the output
  */
 export function append(message: string) {
-  output.append(message)
+  // remove ansi escape codes
+  const sanitized = message.replace(
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    ''
+  )
+  output.append(sanitized)
 }
 
 /**
@@ -46,7 +51,7 @@ export function log(...messages: string[]) {
 export function bind(child: SpanwedChild) {
   child.on(/.*/, (data) => {
     if (data) {
-      output.append(data)
+      append(data)
       // focus on errors, but not the ones about outdated packages
       if (/err/gi.test(data) && !/outdated/gi.test(data)) {
         focus()
