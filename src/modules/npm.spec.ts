@@ -1,4 +1,4 @@
-import { MessageItem, ProgressLocation, window } from 'vscode'
+import { ProgressLocation, window } from 'vscode'
 import { SpanwedChild } from './spawn'
 
 /********************************************************
@@ -23,19 +23,8 @@ const stopServerMock = runSceneServer.stop as jest.MockedFunction<
   typeof runSceneServer.stop
 >
 
-import {
-  getLocalValue,
-  setLocalValue,
-  getGlobalValue,
-  setGlobalValue,
-} from './storage'
+import { getGlobalValue, setGlobalValue } from './storage'
 jest.mock('./storage')
-const getLocalValueMock = getLocalValue as jest.MockedFunction<
-  typeof getLocalValue
->
-const setLocalValueMock = setLocalValue as jest.MockedFunction<
-  typeof setLocalValue
->
 const getGlobalValueMock = getGlobalValue as jest.MockedFunction<
   typeof getGlobalValue
 >
@@ -56,23 +45,9 @@ const getPackageVersionMock = getPackageVersion as jest.MockedFunction<
 >
 
 import { track } from './analytics'
-import {
-  installExtension,
-  npmInstall,
-  npmUninstall,
-  warnDecentralandLibrary,
-  warnOutdatedDependency,
-} from './npm'
+import { installExtension, npmInstall, npmUninstall } from './npm'
 jest.mock('./analytics')
 const trackMock = track as jest.MockedFunction<typeof track>
-
-const showWarningMessageMock = window.showWarningMessage as jest.MockedFunction<
-  typeof window.showWarningMessage
->
-
-const showErrorMessageMock = window.showErrorMessage as jest.MockedFunction<
-  typeof window.showErrorMessage
->
 
 let child: SpanwedChild
 
@@ -294,176 +269,6 @@ describe('npm', () => {
       })
       it('should throw an error', async () => {
         await expect(installExtension()).rejects.toThrow('Some error')
-      })
-    })
-  })
-  describe('When warning that a dependency is outdated', () => {
-    beforeEach(() => {
-      loaderMock.mockImplementationOnce(
-        (_title, waitFor) => waitFor({} as any) as Promise<void>
-      )
-    })
-    afterEach(() => {
-      loaderMock.mockReset()
-    })
-    describe('and the messagge has been ignored', () => {
-      beforeEach(() => {
-        getLocalValueMock.mockReturnValueOnce(true)
-      })
-      afterEach(() => {
-        getLocalValueMock.mockReset()
-      })
-      it('should not promp the user', async () => {
-        await warnOutdatedDependency('the-dependency')
-        expect(showWarningMessageMock).not.toHaveBeenCalled()
-      })
-    })
-    describe('and the messagge has not been ignored', () => {
-      beforeEach(() => {
-        getLocalValueMock.mockReturnValueOnce(false)
-      })
-      afterEach(() => {
-        getLocalValueMock.mockReset()
-      })
-      describe('and the user selects to update the dependency', () => {
-        beforeEach(() => {
-          showWarningMessageMock.mockResolvedValueOnce(
-            'Update' as unknown as MessageItem
-          )
-          loaderMock.mockResolvedValueOnce(void 0)
-        })
-        afterEach(() => {
-          showWarningMessageMock.mockReset()
-          loaderMock.mockReset()
-        })
-        it('should track the show event', async () => {
-          await warnOutdatedDependency('the-dependency')
-          expect(trackMock).toHaveBeenCalledWith(
-            'npm.warn_outdated_dependency:show'
-          )
-        })
-        it('should promp the user', async () => {
-          await warnOutdatedDependency('the-dependency')
-          expect(showWarningMessageMock).toHaveBeenCalledWith(
-            'The dependency "the-dependency" is outdated',
-            'Update',
-            'Ignore'
-          )
-        })
-        it('should install the latest version of the dependency using npm', async () => {
-          await warnOutdatedDependency('the-dependency')
-          expect(binMock).toHaveBeenCalledWith('npm', 'npm', [
-            'install',
-            'the-dependency@latest',
-          ])
-        })
-        it('track the update event', async () => {
-          await warnOutdatedDependency('the-dependency')
-          expect(trackMock).toHaveBeenCalledWith(
-            'npm.warn_outdated_dependency:update'
-          )
-        })
-      })
-      describe('and the user ignores the warning', () => {
-        beforeEach(() => {
-          showWarningMessageMock.mockResolvedValueOnce(
-            'Ignore' as unknown as MessageItem
-          )
-          setLocalValueMock.mockReturnValueOnce(void 0)
-        })
-        afterEach(() => {
-          showWarningMessageMock.mockReset()
-          setLocalValueMock.mockReset()
-        })
-        it('should store the ignore flag in the local storage', async () => {
-          await warnOutdatedDependency('the-dependency')
-          expect(setLocalValueMock).toHaveBeenCalledWith(
-            'ignore:the-dependency',
-            true
-          )
-        })
-        it('should track the ignore event', async () => {
-          await warnOutdatedDependency('the-dependency')
-          expect(trackMock).toHaveBeenCalledWith(
-            'npm.warn_outdated_dependency:ignore'
-          )
-        })
-      })
-    })
-  })
-  describe('When warning a dependency is not a decentraland library', () => {
-    beforeEach(() => {
-      loaderMock.mockImplementation(
-        (_title, waitFor) => waitFor({} as any) as Promise<void>
-      )
-    })
-    afterEach(() => {
-      loaderMock.mockReset()
-    })
-    describe('and the user selects to re-install the dependency', () => {
-      beforeEach(() => {
-        showErrorMessageMock.mockResolvedValueOnce(
-          'Re-install' as unknown as MessageItem
-        )
-      })
-      afterEach(() => {
-        showErrorMessageMock.mockReset()
-      })
-      it('should track the show event', async () => {
-        await warnDecentralandLibrary('the-dependency')
-        expect(trackMock).toHaveBeenCalledWith(
-          'npm.warn_decentraland_library:show'
-        )
-      })
-      it('should promp the user', async () => {
-        await warnDecentralandLibrary('the-dependency')
-        expect(showErrorMessageMock).toHaveBeenCalledWith(
-          'The dependency "the-dependency" is not a valid Decentraland library. You can re-install it as non-library, or remove it.',
-          'Re-install',
-          'Remove'
-        )
-      })
-      it('should re-install the dependency using npm', async () => {
-        await warnDecentralandLibrary('the-dependency')
-        expect(binMock).toHaveBeenCalledTimes(2)
-        expect(binMock).toHaveBeenCalledWith('npm', 'npm', [
-          'uninstall',
-          'the-dependency',
-        ])
-        expect(binMock).toHaveBeenCalledWith('npm', 'npm', [
-          'install',
-          'the-dependency',
-        ])
-      })
-      it('track the update event', async () => {
-        await warnDecentralandLibrary('the-dependency')
-        expect(trackMock).toHaveBeenCalledWith(
-          'npm.warn_decentraland_library:reinstall'
-        )
-      })
-    })
-    describe('and the user removes the dependency', () => {
-      beforeEach(() => {
-        showErrorMessageMock.mockResolvedValueOnce(
-          'Remove' as unknown as MessageItem
-        )
-      })
-      afterEach(() => {
-        showErrorMessageMock.mockReset()
-        binMock.mockReset()
-      })
-      it('should uninstall the dependency using npm', async () => {
-        await warnDecentralandLibrary('the-dependency')
-        expect(binMock).toHaveBeenCalledWith('npm', 'npm', [
-          'uninstall',
-          'the-dependency',
-        ])
-      })
-      it('should track the ignore event', async () => {
-        await warnDecentralandLibrary('the-dependency')
-        expect(trackMock).toHaveBeenCalledWith(
-          'npm.warn_decentraland_library:remove'
-        )
       })
     })
   })
