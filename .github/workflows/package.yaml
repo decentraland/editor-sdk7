@@ -40,18 +40,39 @@ jobs:
     runs-on: ubuntu-latest
     name: Deployment Notification
     steps:
+      - name: Get issue number
+        uses: actions/github-script@v6
+        id: get_issue_number
+        with:
+          script: |
+            if (context.issue.number) {
+              // Return issue number if present
+              return context.issue.number;
+            } else {
+              // Otherwise return issue number from commit
+              return (
+                await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  commit_sha: context.sha,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                })
+              ).data[0].number;
+            }
+          result-encoding: string
+      - name: Log issue number
+        run: echo '${{steps.get_issue_number.outputs.result}}'
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
         with:
-          issue-number: ${{ github.event.pull_request.number }}
+          issue-number: ${{ steps.get_issue_number.outputs.result }}
           comment-author: 'github-actions[bot]'
           body-includes: Test this pull request
       - name: Create or update comment
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
+          issue-number: ${{steps.get_issue_number.outputs.result}}
           body: |
             # Test this pull request
             - The `editor-sdk7` extension can be tested in VSCode by downloading [this](${{ secrets.SDK_TEAM_S3_BASE_URL }}/editor-sdk7/branch/${{ github.head_ref || github.ref }}/artifacts/editor-sdk7.vsix) `.vsix` file and running:
