@@ -3,9 +3,17 @@ import { loader } from './loader'
 import { bin } from './bin'
 import { restart } from '../commands/restart'
 import { runSceneServer } from '../views/run-scene/server'
-import { getLocalValue, setLocalValue } from './storage'
+import {
+  getLocalValue,
+  setLocalValue,
+  getGlobalValue,
+  setGlobalValue,
+} from './storage'
 import { track } from './analytics'
 import { getMessage } from './error'
+import { getExtensionPath } from './path'
+import { getPackageVersion } from './pkg'
+import { log } from './log'
 
 /**
  * Installs a list of npm packages, or install all dependencies if no list is provided
@@ -45,6 +53,36 @@ export async function npmUninstall(dependency: string) {
     await bin('npm', 'npm', ['uninstall', dependency]).wait()
     await restart() // restart server after uninstalling packages
   })
+}
+
+/**
+ * Installs the extension dependencies
+ * @returns Promise that resolves when the install finishes
+ */
+export async function installExtension() {
+  try {
+    const version = getPackageVersion()
+    const key = `extension:${version}`
+    const isInstalled = await getGlobalValue(key)
+    if (!isInstalled) {
+      log(`Installing extension v${version}...`)
+      await loader(
+        `Installing extension v${version}...`,
+        async () => {
+          track(`npm.install_extension`, { dependency: null })
+          await bin('npm', 'npm', ['install'], {
+            cwd: getExtensionPath(),
+          }).wait()
+        },
+        vscode.ProgressLocation.Window
+      )
+      setGlobalValue(key, true)
+    } else {
+      log(`Extension v${version} already installed!`)
+    }
+  } catch (error) {
+    throw new Error(`Error installing extension: ${getMessage(error)}`)
+  }
 }
 
 /**

@@ -1,1 +1,11 @@
-node_modules/**/*.{ts,map}
+node_modules
+!node_modules/.bin/npm
+!node_modules/npm
+src
+coverage
+scripts
+.env.example
+.gitignore
+jest.config.ts
+tsconfig.json
+README.md

@@ -1,6 +1,6 @@
 node_modules
 out
-decentraland-*.vsix
+*.vsix
 .env
 coverage
 dist

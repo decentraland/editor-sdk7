@@ -23,7 +23,12 @@ const stopServerMock = runSceneServer.stop as jest.MockedFunction<
   typeof runSceneServer.stop
 >
 
-import { getLocalValue, setLocalValue } from './storage'
+import {
+  getLocalValue,
+  setLocalValue,
+  getGlobalValue,
+  setGlobalValue,
+} from './storage'
 jest.mock('./storage')
 const getLocalValueMock = getLocalValue as jest.MockedFunction<
   typeof getLocalValue
@@ -31,9 +36,28 @@ const getLocalValueMock = getLocalValue as jest.MockedFunction<
 const setLocalValueMock = setLocalValue as jest.MockedFunction<
   typeof setLocalValue
 >
+const getGlobalValueMock = getGlobalValue as jest.MockedFunction<
+  typeof getGlobalValue
+>
+const setGlobalValueMock = setGlobalValue as jest.MockedFunction<
+  typeof setGlobalValue
+>
+
+import { getExtensionPath } from './path'
+jest.mock('./path')
+const getExtensionPathMock = getExtensionPath as jest.MockedFunction<
+  typeof getExtensionPath
+>
+
+import { getPackageVersion } from './pkg'
+jest.mock('./pkg')
+const getPackageVersionMock = getPackageVersion as jest.MockedFunction<
+  typeof getPackageVersion
+>
 
 import { track } from './analytics'
 import {
+  installExtension,
   npmInstall,
   npmUninstall,
   warnDecentralandLibrary,
@@ -194,6 +218,82 @@ describe('npm', () => {
         await expect(npmUninstall('the-dependency')).rejects.toThrow(
           'Some error'
         )
+      })
+    })
+  })
+  describe('When installing the extension', () => {
+    describe('and the installation succeeds', () => {
+      beforeEach(() => {
+        loaderMock.mockImplementationOnce(
+          (_title, waitFor) => waitFor({} as any) as Promise<void>
+        )
+        getExtensionPathMock.mockReturnValueOnce('/path/to/extension')
+        getPackageVersionMock.mockReturnValueOnce('1.0.0')
+        getGlobalValueMock.mockReturnValueOnce(void 0)
+      })
+      afterEach(() => {
+        loaderMock.mockReset()
+        getExtensionPathMock.mockReset()
+        getPackageVersionMock.mockReset()
+        getGlobalValueMock.mockReset()
+        setGlobalValueMock.mockReset()
+      })
+      it('should use npm to install the dependencies', async () => {
+        await installExtension()
+        expect(binMock).toHaveBeenCalledWith('npm', 'npm', ['install'], {
+          cwd: '/path/to/extension',
+        })
+      })
+      it('should wait for the npm child process to finish', async () => {
+        await installExtension()
+        expect(child.wait).toHaveBeenCalled()
+      })
+      it('check if the extension was already installed', async () => {
+        await installExtension()
+        expect(getGlobalValueMock).toHaveBeenCalledWith('extension:1.0.0')
+      })
+      it('should show a loader on the status bar', async () => {
+        await installExtension()
+        expect(loaderMock).toHaveBeenCalledWith(
+          'Installing extension v1.0.0...',
+          expect.any(Function),
+          ProgressLocation.Window
+        )
+      })
+      it('should track the npm.install_extension event', async () => {
+        await installExtension()
+        expect(trackMock).toHaveBeenCalledWith('npm.install_extension', {
+          dependency: null,
+        })
+      })
+      it('should store the extension version installed', async () => {
+        await installExtension()
+        expect(setGlobalValueMock).toHaveBeenCalledWith('extension:1.0.0', true)
+      })
+    })
+    describe('and the installation succeeds', () => {
+      beforeEach(() => {
+        getPackageVersionMock.mockReturnValueOnce('1.0.0')
+        getGlobalValueMock.mockReturnValueOnce(true)
+      })
+      afterEach(() => {
+        getPackageVersionMock.mockReset()
+        getGlobalValueMock.mockReset()
+      })
+      it('should skip the installation', async () => {
+        await installExtension()
+        expect(binMock).not.toHaveBeenCalled()
+      })
+    })
+    describe('and the installation fails', () => {
+      beforeEach(() => {
+        loaderMock.mockRejectedValueOnce(new Error('Some error'))
+      })
+      afterEach(() => {
+        loaderMock.mockReset()
+      })
+      it('should throw an error', async () => {
+        await expect(installExtension()).rejects.toThrow('Some error')
       })
     })
   })
