@@ -17,8 +17,18 @@ jobs:
       - name: npm install
         run: npm install
 
+      - name: get latest release
+        uses: rez0n/actions-github-release@v2.0
+        id: editor_release
+        with:
+          repository: 'decentraland/editor-sdk7'
+          type: 'stable'
+
+      - name: get commit
+        run: echo "COMMIT_HASH=$(git rev-parse --short "$GITHUB_SHA")"  >> $GITHUB_ENV
+
       - name: build artifact (vsix)
-        run: mkdir artifacts && npx vsce package -o "$_/editor-sdk7.vsix"
+        run: mkdir artifacts && npx vsce package ${{steps.editor_release.outputs.release}}-${{ env.COMMIT_HASH }} -o "$_/editor-sdk7.vsix"
 
       - name: upload artifact to S3
         run: npx @dcl/cdn-uploader@next --bucket ${{ secrets.SDK_TEAM_S3_BUCKET }} --local-folder $(pwd)/artifacts --bucket-folder 'editor-sdk7/branch/${{ github.head_ref || github.ref }}/artifacts'
@@ -48,6 +58,6 @@ jobs:
             - The `editor-sdk7` extension can be tested in VSCode by downloading [this](${{ secrets.SDK_TEAM_S3_BASE_URL }}/editor-sdk7/branch/${{ github.head_ref || github.ref }}/artifacts/editor-sdk7.vsix) `.vsix` file and running:
 
                ```bash
-               code --install-extension editor-sdk7.vsix
+               code --force --install-extension editor-sdk7.vsix
                ```
           edit-mode: replace
