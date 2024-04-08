@@ -230,9 +230,9 @@ describe('npm', () => {
       it('should show a loader on the status bar', async () => {
         await installExtension()
         expect(loaderMock).toHaveBeenCalledWith(
-          'Installing extension v1.0.0...',
+          'Updating Decentraland Editor v1.0.0...',
           expect.any(Function),
-          ProgressLocation.Window
+          ProgressLocation.Notification
         )
       })
       it('should track the npm.install_extension event', async () => {
