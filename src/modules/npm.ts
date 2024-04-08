@@ -62,14 +62,14 @@ export async function installExtension() {
     if (!isInstalled) {
       log(`Installing extension v${version}...`)
       await loader(
-        `Installing extension v${version}...`,
+        `Updating Decentraland Editor v${version}...`,
         async () => {
           track(`npm.install_extension`, { dependency: null })
           await bin('npm', 'npm', ['install'], {
             cwd: getExtensionPath(),
           }).wait()
         },
-        vscode.ProgressLocation.Window
+        vscode.ProgressLocation.Notification
       )
       setGlobalValue(key, true)
     } else {
