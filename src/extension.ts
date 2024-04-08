@@ -16,7 +16,7 @@ import { init } from './commands/init'
 import { restart } from './commands/restart'
 import { inspector } from './commands/inspector'
 import { Dependency } from './views/dependency-tree/types'
-import { npmInstall, npmUninstall } from './modules/npm'
+import { installExtension, npmInstall, npmUninstall } from './modules/npm'
 import { checkNodeBinaries, resolveVersion, setVersion } from './modules/node'
 import { unwatch, watch } from './modules/watch'
 import { log } from './modules/log'
@@ -200,6 +200,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Check node binaries, download them if necessary
     await checkNodeBinaries()
+
+    // Install extension dependencies
+    await installExtension()
 
     // Check and notify updated version for @dcl/sdk
     await notifyUpdate(

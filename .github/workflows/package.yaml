@@ -1,6 +1,6 @@
-on: [pull_request]
+on: [push]
 
-name: Package vsix
+name: Package .vsix
 jobs:
   artifact:
     runs-on: ubuntu-latest
@@ -11,16 +11,25 @@ jobs:
           node-version: 18
           cache: 'npm'
 
-      - name: install cdn-uploader
+      - name: Install cdn-uploader
         run: npm i -g @dcl/cdn-uploader@next
 
-      - name: npm install
+      - name: Install dependencies
         run: npm install
 
-      - name: build artifact (vsix)
-        run: mkdir artifacts && npx vsce package -o "$_/editor-sdk7.vsix"
+      - name: Get latest release
+        uses: pozetroninc/github-action-get-latest-release@v0.7.0
+        id: editor_release
+        with:
+          repository: 'decentraland/editor-sdk7'
 
-      - name: upload artifact to S3
+      - name: Get commit hash
+        run: echo "COMMIT_HASH=$(git rev-parse --short "$GITHUB_SHA")"  >> $GITHUB_ENV
+
+      - name: Build artifact (.vsix)
+        run: git config --global user.name "decentraland" && git config --global user.email "muna@decentraland.org" && mkdir artifacts && npx vsce package ${{steps.editor_release.outputs.release}}-${{ env.COMMIT_HASH }} -o "$_/editor-sdk7.vsix"
+
+      - name: Upload artifact to S3
         run: npx @dcl/cdn-uploader@next --bucket ${{ secrets.SDK_TEAM_S3_BUCKET }} --local-folder $(pwd)/artifacts --bucket-folder 'editor-sdk7/branch/${{ github.head_ref || github.ref }}/artifacts'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SDK_TEAM_AWS_ID }}
@@ -31,23 +40,42 @@ jobs:
     runs-on: ubuntu-latest
     name: Deployment Notification
     steps:
+      - name: Get issue number
+        uses: actions/github-script@v6
+        id: get_issue_number
+        with:
+          script: |
+            if (context.issue.number) {
+              // Return issue number if present
+              return context.issue.number;
+            } else {
+              // Otherwise return issue number from commit
+              return (
+                await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  commit_sha: context.sha,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                })
+              ).data[0].number;
+            }
+          result-encoding: string
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
         with:
-          issue-number: ${{ github.event.pull_request.number }}
+          issue-number: ${{ steps.get_issue_number.outputs.result }}
           comment-author: 'github-actions[bot]'
           body-includes: Test this pull request
       - name: Create or update comment
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
+          issue-number: ${{steps.get_issue_number.outputs.result}}
           body: |
             # Test this pull request
-            - The `editor-sdk7` extension can be tested in VSCode by downloading [this](${{ secrets.SDK_TEAM_S3_BASE_URL }}/editor-sdk7/branch/${{ github.head_ref || github.ref }}/artifacts/editor-sdk7.vsix) `.vsix` file and running:
+            - The `editor-sdk7` extension can be tested in VSCode by downloading [this package](${{ secrets.SDK_TEAM_S3_BASE_URL }}/editor-sdk7/branch/${{ github.head_ref || github.ref }}/artifacts/editor-sdk7.vsix) and running:
 
                ```bash
-               code --install-extension editor-sdk7.vsix
+               code --force --install-extension editor-sdk7.vsix
                ```
           edit-mode: replace
