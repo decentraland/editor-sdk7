@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
 
       - name: Install cdn-uploader
@@ -27,7 +27,7 @@ jobs:
         run: echo "COMMIT_HASH=$(git rev-parse --short "$GITHUB_SHA")"  >> $GITHUB_ENV
 
       - name: Build artifact (.vsix)
-        run: git config --global user.name "decentraland" && git config --global user.email "muna@decentraland.org" && mkdir artifacts && npx vsce package ${{steps.editor_release.outputs.release}}-${{ env.COMMIT_HASH }} -o "$_/editor-sdk7.vsix"
+        run: git config --global user.name "decentraland" && git config --global user.email "muna@decentraland.org" && git stash -u && mkdir artifacts && npx vsce package ${{steps.editor_release.outputs.release}}-${{ env.COMMIT_HASH }} -o "$_/editor-sdk7.vsix"
 
       - name: Upload artifact to S3
         run: npx @dcl/cdn-uploader@next --bucket ${{ secrets.SDK_TEAM_S3_BUCKET }} --local-folder $(pwd)/artifacts --bucket-folder 'editor-sdk7/branch/${{ github.head_ref || github.ref }}/artifacts'
