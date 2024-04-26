@@ -66,17 +66,17 @@
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "Customize Your Scene:\nVisually arrange and adjust your scene with our visual inspector\n[Visual Editor](command:decentraland-sdk7.commands.inspector)",
+        "contents": "Visually arrange and configure the elements in your scene\n[Visual Editor](command:decentraland-sdk7.commands.inspector)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL && !decentraland.isEmpty"
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "Test your project locally\nRun and review your scene locally.\n[Run Scene](command:decentraland-sdk7.commands.browser.run)",
+        "contents": "Run and preview your scene locally.\n[Run Scene](command:decentraland-sdk7.commands.browser.run)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL"
       },
       {
         "view": "decentraland-sdk7.home",
-        "contents": "Ready to go live?\nPublish and open your scene to visitors in Genesis City.\n[Publish to Genesis City](command:decentraland-sdk7.commands.deploy)",
+        "contents": "Ready to go live?\nPublish and open your scene to visitors in the Metaverse.\n[Publish to Genesis City](command:decentraland-sdk7.commands.deploy)",
         "when": "workbenchState != empty && decentraland-sdk7.isDCL"
       },
       {
