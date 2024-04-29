@@ -217,7 +217,7 @@ export async function activate(context: vscode.ExtensionContext) {
     )
 
     // Add main.crdt if not present
-    const mainCrdtPath = path.join(getCwd(), 'main.crdt') //path.join(getExtensionPath(), 'main.crdt')
+    const mainCrdtPath = path.join(getCwd(), 'main.crdt')
     const exists = await vscode.workspace.fs
       .stat(vscode.Uri.file(mainCrdtPath))
       .then(
