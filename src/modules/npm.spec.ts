@@ -1,4 +1,4 @@
-import { ProgressLocation, window } from 'vscode'
+import { ProgressLocation } from 'vscode'
 import { SpanwedChild } from './spawn'
 
 /********************************************************
@@ -45,7 +45,12 @@ const getPackageVersionMock = getPackageVersion as jest.MockedFunction<
 >
 
 import { track } from './analytics'
-import { installExtension, npmInstall, npmUninstall } from './npm'
+import {
+  cleanExtension,
+  installExtension,
+  npmInstall,
+  npmUninstall,
+} from './npm'
 jest.mock('./analytics')
 const trackMock = track as jest.MockedFunction<typeof track>
 
@@ -59,6 +64,7 @@ describe('npm', () => {
   beforeEach(() => {
     child = {
       wait: jest.fn().mockResolvedValue(void 0),
+      once: jest.fn(),
     } as unknown as SpanwedChild
     stopServerMock.mockResolvedValue()
     binMock.mockReturnValue(child)
@@ -246,7 +252,7 @@ describe('npm', () => {
         expect(setGlobalValueMock).toHaveBeenCalledWith('extension:1.0.0', true)
       })
     })
-    describe('and the installation succeeds', () => {
+    describe('and the extension was already installed', () => {
       beforeEach(() => {
         getPackageVersionMock.mockReturnValueOnce('1.0.0')
         getGlobalValueMock.mockReturnValueOnce(true)
@@ -269,6 +275,83 @@ describe('npm', () => {
       })
       it('should throw an error', async () => {
         await expect(installExtension()).rejects.toThrow('Some error')
+      })
+    })
+    describe('and there is an npm error', () => {
+      beforeEach(() => {
+        const onceMock = child.once as jest.Mock
+        const waitMock = child.wait as jest.Mock
+        onceMock.mockImplementation((_pattern, handler) => {
+          handler('npm ERR! Some error')
+        })
+        waitMock.mockImplementation(() => new Promise(() => void 0))
+        loaderMock.mockImplementationOnce(
+          (_title, waitFor) => waitFor({} as any) as Promise<void>
+        )
+      })
+      afterEach(() => {
+        const onceMock = child.once as jest.Mock
+        const waitMock = child.wait as jest.Mock
+        onceMock.mockReset()
+        waitMock.mockReset()
+        loaderMock.mockReset()
+      })
+      it('should throw an error', async () => {
+        await expect(installExtension()).rejects.toThrow('npm ERR! Some error')
+      })
+    })
+  })
+  describe('When cleaning the extension cache', () => {
+    describe('and the cache clean succeeds', () => {
+      beforeEach(() => {
+        loaderMock.mockImplementationOnce(
+          (_title, waitFor) => waitFor({} as any) as Promise<void>
+        )
+        getExtensionPathMock.mockReturnValueOnce('/path/to/extension')
+      })
+      afterEach(() => {
+        loaderMock.mockReset()
+        getExtensionPathMock.mockReset()
+      })
+      it('should use npm to clean the cache', async () => {
+        await cleanExtension()
+        expect(binMock).toHaveBeenCalledWith(
+          'npm',
+          'npm',
+          ['cache', 'clean', '--force'],
+          {
+            cwd: '/path/to/extension',
+          }
+        )
+      })
+      it('should wait for the npm child process to finish', async () => {
+        await cleanExtension()
+        expect(child.wait).toHaveBeenCalled()
+      })
+      it('should show a loader on the status bar', async () => {
+        await cleanExtension()
+        expect(loaderMock).toHaveBeenCalledWith(
+          'Cleaning cache...',
+          expect.any(Function),
+          ProgressLocation.Notification
+        )
+      })
+      it('should track the npm.install_extension event', async () => {
+        await cleanExtension()
+        expect(trackMock).toHaveBeenCalledWith('npm.clean_extension', {
+          dependency: null,
+        })
+      })
+    })
+    describe('and the installation fails', () => {
+      beforeEach(() => {
+        loaderMock.mockRejectedValueOnce(new Error('Some error'))
+      })
+      afterEach(() => {
+        loaderMock.mockReset()
+      })
+      it('should throw an error', async () => {
+        await expect(cleanExtension()).rejects.toThrow('Some error')
       })
     })
   })

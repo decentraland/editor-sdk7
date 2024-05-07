@@ -16,7 +16,12 @@ import { init } from './commands/init'
 import { restart } from './commands/restart'
 import { inspector } from './commands/inspector'
 import { Dependency } from './views/dependency-tree/types'
-import { installExtension, npmInstall, npmUninstall } from './modules/npm'
+import {
+  cleanExtension,
+  installExtension,
+  npmInstall,
+  npmUninstall,
+} from './modules/npm'
 import { checkNodeBinaries, resolveVersion, setVersion } from './modules/node'
 import { unwatch, watch } from './modules/watch'
 import { log } from './modules/log'
@@ -202,7 +207,13 @@ export async function activate(context: vscode.ExtensionContext) {
     await checkNodeBinaries()
 
     // Install extension dependencies
-    await installExtension()
+    try {
+      await installExtension()
+    } catch (error) {
+      // if something goes wrong, try to clean cache and install again
+      await cleanExtension()
+      await installExtension()
+    }
 
     // Check and notify updated version for @dcl/sdk
     await notifyUpdate(

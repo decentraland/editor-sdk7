@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import future from 'fp-future'
 import { loader } from './loader'
 import { bin } from './bin'
 import { restart } from '../commands/restart'
@@ -65,9 +66,17 @@ export async function installExtension() {
         `Updating Decentraland Editor v${version}...`,
         async () => {
           track(`npm.install_extension`, { dependency: null })
-          await bin('npm', 'npm', ['install'], {
+          const child = bin('npm', 'npm', ['install'], {
             cwd: getExtensionPath(),
-          }).wait()
+          })
+
+          // Look for errors
+          const errorFuture = future()
+          child.once(/npm ERR!/, (error) =>
+            errorFuture.reject(new Error(error))
+          )
+
+          return Promise.race([child.wait(), errorFuture])
         },
         vscode.ProgressLocation.Notification
       )
@@ -78,4 +87,18 @@ export async function installExtension() {
   } catch (error) {
     throw new Error(`Error installing extension: ${getMessage(error)}`)
   }
+}
+
+export async function cleanExtension() {
+  log(`Cleaning npm cache...`)
+  await loader(
+    `Cleaning cache...`,
+    async () => {
+      track(`npm.clean_extension`, { dependency: null })
+      await bin('npm', 'npm', ['cache', 'clean', '--force'], {
+        cwd: getExtensionPath(),
+      }).wait()
+    },
+    vscode.ProgressLocation.Notification
+  )
 }
