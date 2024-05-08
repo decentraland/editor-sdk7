@@ -62,7 +62,7 @@ export function spawn(
   const newEnv = {
     ...env,
     PATH: joinEnvPaths(env.PATH, nodePath, npmPath),
-    EDITOR_SDK7: 'true'
+    EDITOR_SDK7: 'true',
   }
 
   const child = crossSpawn(command, args, {
