@@ -1,6 +1,8 @@
-on: [push]
-
 name: Package .vsix
+
+on:
+  pull_request:
+
 jobs:
   artifact:
     runs-on: ubuntu-latest
