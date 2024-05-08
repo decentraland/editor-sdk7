@@ -5,7 +5,11 @@ import { GLTFPreviewEditorProvider } from './views/gltf-preview/provider'
 import { gltfPreviewServer } from './views/gltf-preview/server'
 import { inspectorServer } from './views/inspector/server'
 import { runSceneServer } from './views/run-scene/server'
-import { setExtensionPath, setGlobalStoragePath } from './modules/path'
+import {
+  getExtensionPath,
+  setExtensionPath,
+  setGlobalStoragePath,
+} from './modules/path'
 import { install } from './commands/install'
 import { start } from './commands/start'
 import { browser } from './commands/browser'
@@ -212,6 +216,24 @@ export async function activate(context: vscode.ExtensionContext) {
       'decentraland/js-sdk-toolchain'
     )
 
+    // Add main.crdt if not present
+    const mainCrdtPath = path.join(getCwd(), 'main.crdt')
+    const exists = await vscode.workspace.fs
+      .stat(vscode.Uri.file(mainCrdtPath))
+      .then(
+        () => true,
+        () => false
+      )
+    if (!exists) {
+      log(
+        `Could not find the main.crdt file, copying from extension path to workspace path: ${mainCrdtPath}`
+      )
+      await vscode.workspace.fs.copy(
+        vscode.Uri.joinPath(context.extensionUri, 'resources', 'main.crdt'),
+        vscode.Uri.file(mainCrdtPath)
+      )
+    }
+
     // Start servers and watchers
     await boot()
 
@@ -228,7 +250,9 @@ export async function activate(context: vscode.ExtensionContext) {
     }
     track('activation:success', info)
   } catch (error) {
-    track('activation:error', { message: getMessage(error) })
+    const message = getMessage(error)
+    log(`Error: ${message}`)
+    track('activation:error', { message })
   }
 }
 
