@@ -153,3 +153,10 @@ export function getFilePaths(folder: string) {
   }
   return filePaths
 }
+
+/*
+ * Returns the path to the cache folder for node_modules
+ */
+export function getNodeModulesCachePath() {
+  return path.join(getGlobalStoragePath(), '.cache', 'node_modules')
+}
