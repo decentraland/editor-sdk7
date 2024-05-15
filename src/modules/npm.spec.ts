@@ -256,7 +256,7 @@ describe('npm', () => {
       it('should show a loader on the status bar', async () => {
         await installExtension()
         expect(loaderMock).toHaveBeenCalledWith(
-          'Updating Decentraland Editor v1.0.0...',
+          'Updating Decentraland Editor v1.0.0 [2/3]: Installing...',
           expect.any(Function),
           ProgressLocation.Notification
         )
@@ -411,7 +411,7 @@ describe('npm', () => {
       it('should show a loader', async () => {
         await cacheDependencies()
         expect(loaderMock).toHaveBeenCalledWith(
-          'Updating cache...',
+          'Updating Decentraland Editor v1.0.0 [3/3]: Saving cache...',
           expect.any(Function),
           ProgressLocation.Notification
         )
@@ -489,7 +489,7 @@ describe('npm', () => {
       it('should show a loader', async () => {
         await restoreDependencies()
         expect(loaderMock).toHaveBeenCalledWith(
-          'Restoring cache...',
+          'Updating Decentraland Editor v1.0.0 [1/3]: Restoring cache...',
           expect.any(Function),
           ProgressLocation.Notification
         )

@@ -64,7 +64,7 @@ export async function installExtension() {
     if (!isInstalled) {
       log(`Installing extension v${version}...`)
       await loader(
-        `Updating Decentraland Editor v${version}...`,
+        `Updating Decentraland Editor v${version} [2/3]: Installing...`,
         async () => {
           track(`npm.install_extension`, { dependency: null })
           const child = bin('npm', 'npm', ['install'], {
@@ -118,7 +118,7 @@ export async function cacheDependencies() {
   const nodeModulesCachePath = getNodeModulesCachePath()
   log(`Updating cache into ${nodeModulesCachePath}`)
   await loader(
-    `Updating cache...`,
+    `Updating Decentraland Editor v${version} [3/3]: Saving cache...`,
     async () => {
       track(`npm.cache_node_modules`, { dependency: null })
       await vscode.workspace.fs.copy(
@@ -148,7 +148,7 @@ export async function restoreDependencies() {
   if (isInstalled) return
   log(`Restoring cache...`)
   await loader(
-    `Restoring cache...`,
+    `Updating Decentraland Editor v${version} [1/3]: Restoring cache...`,
     async () => {
       track(`npm.restore_node_modules`, { dependency: null })
       await vscode.workspace.fs.copy(
