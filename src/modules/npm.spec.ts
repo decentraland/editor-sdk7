@@ -1,4 +1,4 @@
-import { ProgressLocation } from 'vscode'
+import { ProgressLocation, workspace, Uri } from 'vscode'
 import { SpanwedChild } from './spawn'
 
 /********************************************************
@@ -32,11 +32,20 @@ const setGlobalValueMock = setGlobalValue as jest.MockedFunction<
   typeof setGlobalValue
 >
 
-import { getExtensionPath } from './path'
+import {
+  getExtensionPath,
+  getGlobalStoragePath,
+  getNodeModulesCachePath,
+} from './path'
 jest.mock('./path')
 const getExtensionPathMock = getExtensionPath as jest.MockedFunction<
   typeof getExtensionPath
 >
+const getGlobalStoragePathMock = getGlobalStoragePath as jest.MockedFunction<
+  typeof getGlobalStoragePath
+>
+const getNodeModulesCachePathMock =
+  getNodeModulesCachePath as jest.MockedFunction<typeof getNodeModulesCachePath>
 
 import { getPackageVersion } from './pkg'
 jest.mock('./pkg')
@@ -45,14 +54,25 @@ const getPackageVersionMock = getPackageVersion as jest.MockedFunction<
 >
 
 import { track } from './analytics'
+jest.mock('./analytics')
+const trackMock = track as jest.MockedFunction<typeof track>
+
+import { exists } from './fs'
+jest.mock('./fs')
+const existsMock = exists as jest.MockedFunction<typeof exists>
+
 import {
+  cacheDependencies,
+  restoreDependencies,
   cleanExtension,
   installExtension,
   npmInstall,
   npmUninstall,
 } from './npm'
-jest.mock('./analytics')
-const trackMock = track as jest.MockedFunction<typeof track>
+
+const copyMock = workspace.fs.copy as jest.MockedFunction<
+  typeof workspace.fs.copy
+>
 
 let child: SpanwedChild
 
@@ -328,7 +348,7 @@ describe('npm', () => {
         await cleanExtension()
         expect(child.wait).toHaveBeenCalled()
       })
-      it('should show a loader on the status bar', async () => {
+      it('should show a loader', async () => {
         await cleanExtension()
         expect(loaderMock).toHaveBeenCalledWith(
           'Cleaning cache...',
@@ -352,6 +372,173 @@ describe('npm', () => {
       })
       it('should throw an error', async () => {
         await expect(cleanExtension()).rejects.toThrow('Some error')
+      })
+    })
+  })
+  describe("When caching the extension's node_modules", () => {
+    describe('and the caching succeeds', () => {
+      beforeEach(() => {
+        loaderMock.mockImplementationOnce(
+          (_title, waitFor) => waitFor({} as any) as Promise<void>
+        )
+        getExtensionPathMock.mockReturnValueOnce('/path/to/extension')
+        getGlobalStoragePathMock.mockReturnValueOnce('/globalStorage')
+        getPackageVersionMock.mockReturnValueOnce('1.0.0')
+        getGlobalValueMock.mockReturnValueOnce(void 0)
+        copyMock.mockResolvedValue()
+        getNodeModulesCachePathMock.mockReturnValueOnce(
+          '/globalStorage/.cache/node_modules'
+        )
+      })
+      afterEach(() => {
+        loaderMock.mockReset()
+        getExtensionPathMock.mockReset()
+        getGlobalStoragePathMock.mockReset()
+        getPackageVersionMock.mockReset()
+        getGlobalValueMock.mockReset()
+        setGlobalValueMock.mockReset()
+        copyMock.mockReset()
+        getNodeModulesCachePathMock.mockReset()
+      })
+      it("should copy the extension's node_modules into the global node_modules cache", async () => {
+        await cacheDependencies()
+        expect(copyMock).toHaveBeenCalled()
+      })
+      it('check if the extension was already cached', async () => {
+        await cacheDependencies()
+        expect(getGlobalValueMock).toHaveBeenCalledWith('extension-cache:1.0.0')
+      })
+      it('should show a loader', async () => {
+        await cacheDependencies()
+        expect(loaderMock).toHaveBeenCalledWith(
+          'Updating cache...',
+          expect.any(Function),
+          ProgressLocation.Notification
+        )
+      })
+      it('should track the npm.cache_node_modules event', async () => {
+        await cacheDependencies()
+        expect(trackMock).toHaveBeenCalledWith('npm.cache_node_modules', {
+          dependency: null,
+        })
+      })
+      it('should store the extension version installed', async () => {
+        await cacheDependencies()
+        expect(setGlobalValueMock).toHaveBeenCalledWith(
+          'extension-cache:1.0.0',
+          true
+        )
+      })
+    })
+    describe('and the extension was already cached', () => {
+      beforeEach(() => {
+        getPackageVersionMock.mockReturnValueOnce('1.0.0')
+        getGlobalValueMock.mockReturnValueOnce(true)
+      })
+      afterEach(() => {
+        getPackageVersionMock.mockReset()
+        getGlobalValueMock.mockReset()
+      })
+      it('should skip the caching', async () => {
+        await cacheDependencies()
+        expect(copyMock).not.toHaveBeenCalled()
+      })
+    })
+  })
+  describe("When restoring the extension's node_modules cache", () => {
+    describe('and the restoring succeeds', () => {
+      beforeEach(() => {
+        loaderMock.mockImplementationOnce(
+          (_title, waitFor) => waitFor({} as any) as Promise<void>
+        )
+        getExtensionPathMock.mockReturnValueOnce('/path/to/extension')
+        getGlobalStoragePathMock.mockReturnValueOnce('/globalStorage')
+        getPackageVersionMock.mockReturnValueOnce('1.0.0')
+        getGlobalValueMock.mockReturnValueOnce(void 0)
+        copyMock.mockResolvedValue()
+        existsMock.mockResolvedValue(true)
+        getNodeModulesCachePathMock.mockReturnValueOnce(
+          '/globalStorage/.cache/node_modules'
+        )
+      })
+      afterEach(() => {
+        loaderMock.mockReset()
+        getExtensionPathMock.mockReset()
+        getGlobalStoragePathMock.mockReset()
+        getPackageVersionMock.mockReset()
+        getGlobalValueMock.mockReset()
+        setGlobalValueMock.mockReset()
+        copyMock.mockReset()
+        existsMock.mockReset()
+        getNodeModulesCachePathMock.mockReset()
+      })
+      it("should copy the global node_modules cache into the extension's node_modules", async () => {
+        await restoreDependencies()
+        expect(copyMock).toHaveBeenCalled()
+      })
+      it('check if the cache exists', async () => {
+        await restoreDependencies()
+        expect(existsMock).toHaveBeenCalledWith(
+          '/globalStorage/.cache/node_modules'
+        )
+      })
+      it('check if the extension was already installed', async () => {
+        await restoreDependencies()
+        expect(getGlobalValueMock).toHaveBeenCalledWith('extension:1.0.0')
+      })
+      it('should show a loader', async () => {
+        await restoreDependencies()
+        expect(loaderMock).toHaveBeenCalledWith(
+          'Restoring cache...',
+          expect.any(Function),
+          ProgressLocation.Notification
+        )
+      })
+      it('should track the npm.restore_node_modules event', async () => {
+        await restoreDependencies()
+        expect(trackMock).toHaveBeenCalledWith('npm.restore_node_modules', {
+          dependency: null,
+        })
+      })
+    })
+    describe('and the extension was already installed', () => {
+      beforeEach(() => {
+        getPackageVersionMock.mockReturnValueOnce('1.0.0')
+        getGlobalValueMock.mockReturnValueOnce(true)
+        existsMock.mockResolvedValue(true)
+        getNodeModulesCachePathMock.mockReturnValueOnce(
+          '/globalStorage/.cache/node_modules'
+        )
+      })
+      afterEach(() => {
+        getPackageVersionMock.mockReset()
+        getGlobalValueMock.mockReset()
+        existsMock.mockReset()
+        getNodeModulesCachePathMock.mockReset()
+      })
+      it('should skip the caching', async () => {
+        await restoreDependencies()
+        expect(copyMock).not.toHaveBeenCalled()
+      })
+    })
+    describe('and the cache does not exist', () => {
+      beforeEach(() => {
+        getPackageVersionMock.mockReturnValueOnce('1.0.0')
+        getGlobalValueMock.mockReturnValueOnce(true)
+        existsMock.mockResolvedValue(false)
+        getNodeModulesCachePathMock.mockReturnValueOnce(
+          '/globalStorage/.cache/node_modules'
+        )
+      })
+      afterEach(() => {
+        getPackageVersionMock.mockReset()
+        getGlobalValueMock.mockReset()
+        existsMock.mockReset()
+        getNodeModulesCachePathMock.mockReset()
+      })
+      it('should skip the caching', async () => {
+        await restoreDependencies()
+        expect(copyMock).not.toHaveBeenCalled()
       })
     })
   })
