@@ -33,6 +33,10 @@ export const workspace = {
       },
     },
   ],
+  fs: {
+    stat: jest.fn().mockResolvedValue({}),
+    copy: jest.fn().mockResolvedValue({}),
+  },
 }
 
 export const env = {
@@ -42,7 +46,8 @@ export const env = {
 
 export const Uri = {
   parse: jest.fn().mockImplementation((value) => value),
-  joinPath: (...paths: string[]) => paths.join(''),
+  file: jest.fn().mockImplementation((value) => value),
+  joinPath: (...paths: string[]) => paths.join('/'),
 }
 
 export const ExtensionMode = {

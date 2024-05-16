@@ -7,9 +7,10 @@ import { runSceneServer } from '../views/run-scene/server'
 import { getGlobalValue, setGlobalValue } from './storage'
 import { track } from './analytics'
 import { getMessage } from './error'
-import { getExtensionPath } from './path'
+import { getExtensionPath, getNodeModulesCachePath } from './path'
 import { getPackageVersion } from './pkg'
 import { log } from './log'
+import { exists } from './fs'
 
 /**
  * Installs a list of npm packages, or install all dependencies if no list is provided
@@ -63,7 +64,7 @@ export async function installExtension() {
     if (!isInstalled) {
       log(`Installing extension v${version}...`)
       await loader(
-        `Updating Decentraland Editor v${version}...`,
+        `Updating Decentraland Editor v${version} [2/3]: Installing...`,
         async () => {
           track(`npm.install_extension`, { dependency: null })
           const child = bin('npm', 'npm', ['install'], {
@@ -89,6 +90,9 @@ export async function installExtension() {
   }
 }
 
+/**
+ * Cleans the extension's npm cache
+ */
 export async function cleanExtension() {
   log(`Cleaning npm cache...`)
   await loader(
@@ -98,6 +102,63 @@ export async function cleanExtension() {
       await bin('npm', 'npm', ['cache', 'clean', '--force'], {
         cwd: getExtensionPath(),
       }).wait()
+    },
+    vscode.ProgressLocation.Notification
+  )
+}
+
+/**
+ * Caches the extension's dependencies
+ */
+export async function cacheDependencies() {
+  const version = getPackageVersion()
+  const key = `extension-cache:${version}`
+  const isCached = await getGlobalValue(key)
+  if (isCached) return
+  const nodeModulesCachePath = getNodeModulesCachePath()
+  log(`Updating cache into ${nodeModulesCachePath}`)
+  await loader(
+    `Updating Decentraland Editor v${version} [3/3]: Saving cache...`,
+    async () => {
+      track(`npm.cache_node_modules`, { dependency: null })
+      await vscode.workspace.fs.copy(
+        vscode.Uri.joinPath(
+          vscode.Uri.parse(getExtensionPath()),
+          'node_modules'
+        ),
+        vscode.Uri.parse(nodeModulesCachePath),
+        { overwrite: true }
+      )
+    },
+    vscode.ProgressLocation.Notification
+  )
+  setGlobalValue(key, true)
+}
+
+/**
+ * Restore the extension's dependencies from cache
+ */
+export async function restoreDependencies() {
+  const nodeModulesCachePath = getNodeModulesCachePath()
+  const nodeModulesCacheExists = await exists(nodeModulesCachePath)
+  if (!nodeModulesCacheExists) return
+  const version = getPackageVersion()
+  const key = `extension:${version}`
+  const isInstalled = await getGlobalValue(key)
+  if (isInstalled) return
+  log(`Restoring cache...`)
+  await loader(
+    `Updating Decentraland Editor v${version} [1/3]: Restoring cache...`,
+    async () => {
+      track(`npm.restore_node_modules`, { dependency: null })
+      await vscode.workspace.fs.copy(
+        vscode.Uri.parse(nodeModulesCachePath),
+        vscode.Uri.joinPath(
+          vscode.Uri.parse(getExtensionPath()),
+          'node_modules'
+        ),
+        { overwrite: true }
+      )
     },
     vscode.ProgressLocation.Notification
   )

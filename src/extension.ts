@@ -21,10 +21,12 @@ import { restart } from './commands/restart'
 import { inspector } from './commands/inspector'
 import { Dependency } from './views/dependency-tree/types'
 import {
+  cacheDependencies,
   cleanExtension,
   installExtension,
   npmInstall,
   npmUninstall,
+  restoreDependencies,
 } from './modules/npm'
 import { checkNodeBinaries, resolveVersion, setVersion } from './modules/node'
 import { unwatch, watch } from './modules/watch'
@@ -42,6 +44,7 @@ import { notifyUpdate } from './modules/notification'
 import { getCwd, isDCL, isEmpty } from './modules/workspace'
 import { getServerUrl } from './utils'
 import { ServerName } from './types'
+import { exists } from './modules/fs'
 
 export async function activate(context: vscode.ExtensionContext) {
   track('activation:request')
@@ -210,6 +213,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Check node binaries, download them if necessary
     await checkNodeBinaries()
 
+    // Restore extension dependencies from cache
+    await restoreDependencies()
+
     // Install extension dependencies
     try {
       await installExtension()
@@ -218,6 +224,9 @@ export async function activate(context: vscode.ExtensionContext) {
       await cleanExtension()
       await installExtension()
     }
+
+    // Cache extension dependencies
+    await cacheDependencies()
 
     // Check and notify updated version for @dcl/sdk
     await notifyUpdate(
@@ -229,13 +238,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Add main.crdt if not present
     const mainCrdtPath = path.join(getCwd(), 'main.crdt')
-    const exists = await vscode.workspace.fs
-      .stat(vscode.Uri.file(mainCrdtPath))
-      .then(
-        () => true,
-        () => false
-      )
-    if (!exists) {
+    const mainCrdtExists = await exists(mainCrdtPath)
+
+    if (!mainCrdtExists) {
       log(
         `Could not find the main.crdt file, copying from extension path to workspace path: ${mainCrdtPath}`
       )

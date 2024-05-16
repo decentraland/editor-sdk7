@@ -4,6 +4,7 @@ import {
   getGlobalStoragePath,
   getModuleBinPath,
   getNodeBinPath,
+  getNodeModulesCachePath,
   joinEnvPaths,
   setExtensionPath,
   setGlobalStoragePath,
@@ -102,7 +103,9 @@ describe('path', () => {
       describe('and the command is part of the binaries', () => {
         it('should return the path to the bin file', () => {
           expect(getModuleBinPath('some-module', 'cmd')).toBe(
-            convertSlashToInvertSlashIfWin32('/path/to/extension/node_modules/some-module/path/to/cmd.js')
+            convertSlashToInvertSlashIfWin32(
+              '/path/to/extension/node_modules/some-module/path/to/cmd.js'
+            )
           )
         })
       })
@@ -156,7 +159,9 @@ describe('path', () => {
       })
       it('should return the path to the Windows node bin', () => {
         expect(getNodeBinPath()).toBe(
-          convertSlashToInvertSlashIfWin32('/globalStorage/bin/node-v1.0.0-win-x64/node.exe')
+          convertSlashToInvertSlashIfWin32(
+            '/globalStorage/bin/node-v1.0.0-win-x64/node.exe'
+          )
         )
       })
     })
@@ -179,7 +184,9 @@ describe('path', () => {
       })
       it('should return the path to the MacOS node bin', () => {
         expect(getNodeBinPath()).toBe(
-          convertSlashToInvertSlashIfWin32('/globalStorage/bin/node-v1.0.0-darwin-arm64/bin/node')
+          convertSlashToInvertSlashIfWin32(
+            '/globalStorage/bin/node-v1.0.0-darwin-arm64/bin/node'
+          )
         )
       })
     })
@@ -235,8 +242,12 @@ describe('path', () => {
       })
       it('should return the two files', () => {
         expect(getFilePaths('/some/folder')).toEqual([
-          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/file1.txt')),
-          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/file2.txt')),
+          addDriveIfWin32(
+            convertSlashToInvertSlashIfWin32('/some/folder/file1.txt')
+          ),
+          addDriveIfWin32(
+            convertSlashToInvertSlashIfWin32('/some/folder/file2.txt')
+          ),
         ])
       })
     })
@@ -274,12 +285,37 @@ describe('path', () => {
       })
       it('should include the files in the subfolder', () => {
         expect(getFilePaths('/some/folder')).toEqual([
-          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/file1.txt')),
-          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/file2.txt')),
-          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/subfolder/subfile1.txt')),
-          addDriveIfWin32(convertSlashToInvertSlashIfWin32('/some/folder/subfolder/subfile2.txt')),
+          addDriveIfWin32(
+            convertSlashToInvertSlashIfWin32('/some/folder/file1.txt')
+          ),
+          addDriveIfWin32(
+            convertSlashToInvertSlashIfWin32('/some/folder/file2.txt')
+          ),
+          addDriveIfWin32(
+            convertSlashToInvertSlashIfWin32(
+              '/some/folder/subfolder/subfile1.txt'
+            )
+          ),
+          addDriveIfWin32(
+            convertSlashToInvertSlashIfWin32(
+              '/some/folder/subfolder/subfile2.txt'
+            )
+          ),
         ])
       })
+    })
+  })
+  describe('When getting the node modules cache path', () => {
+    beforeAll(() => {
+      setGlobalStoragePath('/globalStorage')
+    })
+    afterAll(() => {
+      setGlobalStoragePath(null)
+    })
+    it('should return the path to the cache folder for node_modules', () => {
+      expect(getNodeModulesCachePath()).toBe(
+        convertSlashToInvertSlashIfWin32('/globalStorage/.cache/node_modules')
+      )
     })
   })
 })
