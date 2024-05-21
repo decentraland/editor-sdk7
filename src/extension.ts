@@ -236,18 +236,20 @@ export async function activate(context: vscode.ExtensionContext) {
       'decentraland/js-sdk-toolchain'
     )
 
-    // Add main.crdt if not present
-    const mainCrdtPath = path.join(getCwd(), 'main.crdt')
-    const mainCrdtExists = await exists(mainCrdtPath)
+    // Add main.crdt if not present (only if it is a DCL project)
+    if (isDCL()) {
+      const mainCrdtPath = path.join(getCwd(), 'main.crdt')
+      const mainCrdtExists = await exists(mainCrdtPath)
 
-    if (!mainCrdtExists) {
-      log(
-        `Could not find the main.crdt file, copying from extension path to workspace path: ${mainCrdtPath}`
-      )
-      await vscode.workspace.fs.copy(
-        vscode.Uri.joinPath(context.extensionUri, 'resources', 'main.crdt'),
-        vscode.Uri.file(mainCrdtPath)
-      )
+      if (!mainCrdtExists) {
+        log(
+          `Could not find the main.crdt file, copying from extension path to workspace path: ${mainCrdtPath}`
+        )
+        await vscode.workspace.fs.copy(
+          vscode.Uri.joinPath(context.extensionUri, 'resources', 'main.crdt'),
+          vscode.Uri.file(mainCrdtPath)
+        )
+      }
     }
 
     // Start servers and watchers
