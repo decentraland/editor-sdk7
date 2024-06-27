@@ -236,13 +236,6 @@ export async function activate(context: vscode.ExtensionContext) {
       'decentraland/js-sdk-toolchain'
     )
 
-    try {
-      getCwd()
-    } catch (error: any) {
-      log('There is no active workspace folder. Aborting activation.')
-      return
-    }
-
     // Add main.crdt if not present (only if it is a DCL project)
     if (isDCL()) {
       const mainCrdtPath = path.join(getCwd(), 'main.crdt')
@@ -259,8 +252,10 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     }
 
-    // Start servers and watchers
-    await boot()
+    // Start servers and watchers (only if it is a DCL project)
+    if (isDCL()) {
+      await boot()
+    }
 
     // report activation success
     const isDecentraland = isDCL()
