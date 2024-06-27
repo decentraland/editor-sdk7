@@ -14,7 +14,7 @@ export function getCwd() {
     const folder = workspaceFolders[0]
     return folder.uri.fsPath
   }
-  throw new Error('Could not get an active workspace folder')
+  throw new Error('getCwd(): Could not get workspace folder')
 }
 
 /**
