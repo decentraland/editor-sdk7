@@ -236,6 +236,11 @@ export async function activate(context: vscode.ExtensionContext) {
       'decentraland/js-sdk-toolchain'
     )
 
+    if (getCwd() === '') {
+      log('There is no active workspace folder. Aborting activation.')
+      return
+    }
+
     // Add main.crdt if not present (only if it is a DCL project)
     if (isDCL()) {
       const mainCrdtPath = path.join(getCwd(), 'main.crdt')
