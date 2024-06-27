@@ -44,8 +44,8 @@ describe('workspace', () => {
         ; (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[]) =
           realWorkspaceFolders
       })
-      it('should return an empty string', () => {
-        expect(getCwd()).toEqual('')
+      it('should throw', () => {
+        expect(() => getCwd()).toThrow()
       })
     })
   })

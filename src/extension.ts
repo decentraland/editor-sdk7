@@ -236,7 +236,9 @@ export async function activate(context: vscode.ExtensionContext) {
       'decentraland/js-sdk-toolchain'
     )
 
-    if (getCwd() === '') {
+    try {
+      getCwd()
+    } catch (error: any) {
       log('There is no active workspace folder. Aborting activation.')
       return
     }

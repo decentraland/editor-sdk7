@@ -2,7 +2,6 @@ import * as vscode from 'vscode'
 import fs from 'fs'
 import path from 'path'
 import { Scene } from '@dcl/schemas'
-import { log } from './log'
 import { hasDependency } from './pkg'
 
 /**
@@ -15,8 +14,7 @@ export function getCwd() {
     const folder = workspaceFolders[0]
     return folder.uri.fsPath
   }
-  log('getCwd(): Could not get an active workspace folder')
-  return ''
+  throw new Error('Could not get an active workspace folder')
 }
 
 /**
