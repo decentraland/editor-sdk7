@@ -252,10 +252,7 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     }
 
-    // Start servers and watchers (only if it is a DCL project)
-    if (isDCL()) {
-      await boot()
-    }
+    await boot()
 
     // report activation success
     const isDecentraland = isDCL()
@@ -308,7 +305,11 @@ export async function validate() {
 }
 
 async function boot() {
-  log(`Workspace: "${getCwd()}"`)
+  try {
+    log(`Workspace: "${getCwd()}"`)
+  } catch (error: any) {
+    log(`Could not get workspace folder:`, error.message)
+  }
   const isValid = isDCL()
   // Start webservers
   try {
