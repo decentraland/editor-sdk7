@@ -225,8 +225,9 @@ export async function activate(context: vscode.ExtensionContext) {
       await installExtension()
     }
 
+    // TODO: Fix Method disabled due to node commands execution OS permissions - https://github.com/decentraland/editor-sdk7/issues/119
     // Cache extension dependencies
-    await cacheDependencies()
+    // await cacheDependencies()
 
     // Check and notify updated version for @dcl/sdk
     await notifyUpdate(
