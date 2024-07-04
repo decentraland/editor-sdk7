@@ -1,4 +1,4 @@
-import { ProgressLocation, workspace, Uri } from 'vscode'
+import { ProgressLocation, workspace, window, MessageItem } from 'vscode'
 import { SpanwedChild } from './spawn'
 
 /********************************************************
@@ -61,6 +61,15 @@ import { exists } from './fs'
 jest.mock('./fs')
 const existsMock = exists as jest.MockedFunction<typeof exists>
 
+import { getLocalValue, setLocalValue } from './storage'
+jest.mock('./storage')
+const getLocalValueMock = getLocalValue as jest.MockedFunction<
+  typeof getLocalValue
+>
+const setLocalValueMock = setLocalValue as jest.MockedFunction<
+  typeof setLocalValue
+>
+
 import {
   cacheDependencies,
   restoreDependencies,
@@ -68,11 +77,17 @@ import {
   installExtension,
   npmInstall,
   npmUninstall,
+  warnOutdatedSdkVersion,
 } from './npm'
 
 const copyMock = workspace.fs.copy as jest.MockedFunction<
   typeof workspace.fs.copy
 >
+
+const showInformationMessageMock =
+  window.showInformationMessage as jest.MockedFunction<
+    typeof window.showInformationMessage
+  >
 
 let child: SpanwedChild
 
@@ -539,6 +554,94 @@ describe('npm', () => {
       it('should skip the caching', async () => {
         await restoreDependencies()
         expect(copyMock).not.toHaveBeenCalled()
+      })
+    })
+  })
+  describe('When warning that the SDK is outdated', () => {
+    beforeEach(() => {
+      loaderMock.mockImplementationOnce(
+        (_title, waitFor) => waitFor({} as any) as Promise<void>
+      )
+    })
+    afterEach(() => {
+      loaderMock.mockReset()
+    })
+    describe('and the messagge has been ignored', () => {
+      beforeEach(() => {
+        getLocalValueMock.mockReturnValueOnce(true)
+      })
+      afterEach(() => {
+        getLocalValueMock.mockReset()
+      })
+      it('should not promp the user', async () => {
+        await warnOutdatedSdkVersion('1.0.0')
+        expect(showInformationMessageMock).not.toHaveBeenCalled()
+      })
+    })
+    describe('and the messagge has not been ignored', () => {
+      beforeEach(() => {
+        getLocalValueMock.mockReturnValueOnce(false)
+      })
+      afterEach(() => {
+        getLocalValueMock.mockReset()
+      })
+      describe('and the user selects to update the SDK', () => {
+        beforeEach(() => {
+          showInformationMessageMock.mockResolvedValueOnce(
+            'Update' as unknown as MessageItem
+          )
+          loaderMock.mockResolvedValueOnce(void 0)
+        })
+        afterEach(() => {
+          showInformationMessageMock.mockReset()
+          loaderMock.mockReset()
+        })
+        it('should track the show event', async () => {
+          await warnOutdatedSdkVersion('1.0.0')
+          expect(trackMock).toHaveBeenCalledWith('npm.warn_outdated_sdk:show')
+        })
+        it('should promp the user', async () => {
+          await warnOutdatedSdkVersion('1.0.0')
+          expect(showInformationMessageMock).toHaveBeenCalledWith(
+            `New version available: Decentraland SDK v1.0.0`,
+            'Update',
+            'Ignore'
+          )
+        })
+        it('should install the latest version of the dependency using npm', async () => {
+          await warnOutdatedSdkVersion('1.0.0')
+          expect(binMock).toHaveBeenCalledWith('npm', 'npm', [
+            'install',
+            '@dcl/sdk@1.0.0',
+          ])
+        })
+        it('track the update event', async () => {
+          await warnOutdatedSdkVersion('1.0.0')
+          expect(trackMock).toHaveBeenCalledWith('npm.warn_outdated_sdk:update')
+        })
+      })
+      describe('and the user ignores the warning', () => {
+        beforeEach(() => {
+          showInformationMessageMock.mockResolvedValueOnce(
+            'Ignore' as unknown as MessageItem
+          )
+          setLocalValueMock.mockReturnValueOnce(void 0)
+        })
+        afterEach(() => {
+          showInformationMessageMock.mockReset()
+          setLocalValueMock.mockReset()
+        })
+        it('should store the ignore flag in the local storage', async () => {
+          await warnOutdatedSdkVersion('1.0.0')
+          expect(setLocalValueMock).toHaveBeenCalledWith(
+            'ignore-sdk-version:1.0.0',
+            true
+          )
+        })
+        it('should track the ignore event', async () => {
+          await warnOutdatedSdkVersion('1.0.0')
+          expect(trackMock).toHaveBeenCalledWith('npm.warn_outdated_sdk:ignore')
+        })
       })
     })
   })
