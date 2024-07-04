@@ -4,9 +4,10 @@ import { syncSdkVersion } from './sdk'
                           Mocks
 *********************************************************/
 
-import { npmInstall } from './npm'
+import { warnOutdatedSdkVersion } from './npm'
 jest.mock('./npm')
-const npmInstallMock = npmInstall as jest.MockedFunction<typeof npmInstall>
+const warnOutdatedSdkVersionMock =
+  warnOutdatedSdkVersion as jest.MockedFunction<typeof warnOutdatedSdkVersion>
 
 import { getPackageVersion } from './pkg'
 jest.mock('./pkg')
@@ -38,27 +39,27 @@ describe('sdk', () => {
       })
       it('should not install the sdk', async () => {
         await syncSdkVersion()
-        expect(npmInstallMock).not.toHaveBeenCalled()
+        expect(warnOutdatedSdkVersionMock).not.toHaveBeenCalled()
       })
     })
-    describe('and the version of the workspace\'s @dcl/sdk is the same than the one on the extension', () => {
+    describe("and the version of the workspace's @dcl/sdk is the same than the one on the extension", () => {
       beforeEach(() => {
         extensionSdkVersion = '1.0.0'
         workspaceSdkVersion = extensionSdkVersion
       })
       it('should not install the sdk', async () => {
         await syncSdkVersion()
-        expect(npmInstallMock).not.toHaveBeenCalled()
+        expect(warnOutdatedSdkVersionMock).not.toHaveBeenCalled()
       })
     })
-    describe('and the version of the workspace\'s @dcl/sdk is different to the one on the extension', () => {
+    describe("and the version of the workspace's @dcl/sdk is different to the one on the extension", () => {
       beforeEach(() => {
         extensionSdkVersion = '2.0.0'
         workspaceSdkVersion = '1.0.0'
       })
       it('should install the extension version into the workspace', async () => {
         await syncSdkVersion()
-        expect(npmInstallMock).toHaveBeenCalledWith('@dcl/sdk@2.0.0')
+        expect(warnOutdatedSdkVersionMock).toHaveBeenCalledWith('2.0.0')
       })
     })
   })

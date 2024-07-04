@@ -4,7 +4,12 @@ import { loader } from './loader'
 import { bin } from './bin'
 import { restart } from '../commands/restart'
 import { runSceneServer } from '../views/run-scene/server'
-import { getGlobalValue, setGlobalValue } from './storage'
+import {
+  getGlobalValue,
+  getLocalValue,
+  setGlobalValue,
+  setLocalValue,
+} from './storage'
 import { track } from './analytics'
 import { getMessage } from './error'
 import { getExtensionPath, getNodeModulesCachePath } from './path'
@@ -162,4 +167,32 @@ export async function restoreDependencies() {
     },
     vscode.ProgressLocation.Notification
   )
+}
+
+/**
+ * Warns the user that a dependency is outdated, allows them to upgrade it
+ * @param version
+ * @returns
+ */
+export async function warnOutdatedSdkVersion(version: string) {
+  const storageKey = `ignore-sdk-version:${version}`
+  const isIgnored = getLocalValue<boolean>(storageKey)
+  if (isIgnored) {
+    return
+  }
+  const update = 'Update'
+  const ignore = 'Ignore'
+  track(`npm.warn_outdated_sdk:show`)
+  const action = await vscode.window.showInformationMessage(
+    `New version available: Decentraland SDK v${version}`,
+    update,
+    ignore
+  )
+  if (action === update) {
+    await npmInstall(`@dcl/sdk@${version}`)
+    track(`npm.warn_outdated_sdk:update`)
+  } else if (action === ignore) {
+    setLocalValue(storageKey, true)
+    track(`npm.warn_outdated_sdk:ignore`)
+  }
 }
