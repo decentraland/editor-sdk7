@@ -19,8 +19,6 @@ export abstract class Server {
   }
 
   async start(...args: any[]) {
-    const a = true
-    if (a) return
     try {
       await this.stop()
       if (this.isStarting) {
