@@ -8,6 +8,7 @@ import { hasNodeModules } from '../../modules/workspace'
 import { syncSdkVersion } from '../../modules/sdk'
 import { Server } from '../../modules/server'
 import { ServerName } from '../../types'
+import { useCreatorHubMessage } from '../../utils'
 
 class RunSceneServer extends Server {
   child: SpanwedChild | null = null
@@ -17,7 +18,9 @@ class RunSceneServer extends Server {
 
   async onStart() {
     const a = true
-    if (a) return
+    if (a) {
+      return useCreatorHubMessage()
+    }
     // install dependencies
     if (!hasNodeModules()) {
       await npmInstall()
