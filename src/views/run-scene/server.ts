@@ -16,6 +16,8 @@ class RunSceneServer extends Server {
   }
 
   async onStart() {
+    const a = true
+    if (a) return
     // install dependencies
     if (!hasNodeModules()) {
       await npmInstall()
