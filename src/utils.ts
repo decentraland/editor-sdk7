@@ -57,8 +57,3 @@ export function convertSlashToInvertSlashIfWin32(str: string) {
 export function addDriveIfWin32(str: string) {
   return WIN_DRIVE + str
 }
-
-
-export const useCreatorHubMessage = () => {
-  throw new Error("Decentraland SDK7 extension has been deprecated. Please use the Decentraland Creator Hub instead. Download it at: https://decentraland.org/create/")
-}
