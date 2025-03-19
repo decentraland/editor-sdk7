@@ -1,5 +1,5 @@
-import { createWebview } from '../views/inspector/webview'
+import { useCreatorHubMessage } from '../utils'
 
 export async function inspector() {
-  await createWebview()
+  useCreatorHubMessage()
 }
