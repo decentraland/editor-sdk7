@@ -1,5 +1,7 @@
-import { useCreatorHubMessage } from "../utils";
+import { loader } from '../modules/loader'
+import { createWebivew } from '../views/run-scene/webview'
 
 export async function start() {
-  return useCreatorHubMessage()
+  const webview = await createWebivew()
+  await loader('Initializing scene...', () => webview.loadOrDispose())
 }

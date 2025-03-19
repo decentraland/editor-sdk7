@@ -17,5 +17,5 @@ jobs:
           node-version: 20.x
       - name: Install
         run: npm install
-      # - name: Test
-      #   run: npm run test:coverage
+      - name: Test
+        run: npm run test:coverage

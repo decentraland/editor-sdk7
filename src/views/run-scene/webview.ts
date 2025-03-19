@@ -7,8 +7,6 @@ import { ServerName } from '../../types'
 import { getServerUrl } from '../../utils'
 
 export async function createWebivew() {
-  const a = true
-  if (a) return
   const panel = vscode.window.createWebviewPanel(
     `decentraland-sdk7.webviews.RunScene`,
     `Decentraland`,
