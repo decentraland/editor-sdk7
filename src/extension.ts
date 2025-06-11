@@ -254,7 +254,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
 
     // Start servers and watchers
-    await boot()
+    // await boot()
 
     // report activation success
     const isDecentraland = isDCL()
